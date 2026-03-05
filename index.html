@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🚀 CADETES DE 5to GRADO - Desarrollado por Eliseo Espinoza</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+            background: #0a0a1a;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stars-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        #startScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a3e 0%, #0f0f23 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s;
+            border: 3px solid #00d4ff;
+            box-shadow: inset 0 0 50px rgba(0, 212, 255, 0.3);
+        }
+
+        #startScreen h1 {
+            font-size: 2.2em;
+            color: #00d4ff;
+            text-shadow: 0 0 20px #00d4ff, 3px 3px 6px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
+            animation: neonPulse 2s infinite;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        @keyframes neonPulse {
+            0%, 100% { text-shadow: 0 0 20px #00d4ff, 0 0 40px #00d4ff; }
+            50% { text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff; }
+        }
+
+        .developer {
+            color: #ff00ff;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #ff00ff;
+            background: rgba(0,0,0,0.5);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 2px solid #ff00ff;
+        }
+
+        .level-select {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px;
+            max-width: 500px;
+        }
+
+        .level-btn {
+            background: linear-gradient(135deg, #2d1b69 0%, #1a1a3e 100%);
+            border: 3px solid #00d4ff;
+            padding: 20px;
+            font-size: 1.2em;
+            border-radius: 15px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .level-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.6);
+        }
+
+        .level-number {
+            font-size: 2em;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .instructions {
+            color: #fff;
+            text-align: center;
+            margin: 20px;
+            font-size: 1em;
+            max-width: 600px;
+            line-height: 1.6;
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #ff00ff;
+        }
+
+        .instructions h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .strategy-box {
+            background: rgba(255,0,255,0.2);
+            border: 2px solid #ff00ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .strategy-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 8px 0;
+            font-size: 0.95em;
+        }
+
+        .shoot-good { color: #ff4757; }
+        .shoot-bad { color: #2ed573; }
+
+        .audio-hint {
+            color: #ffa502;
+            font-size: 0.9em;
+            margin-top: 10px;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        #gameArea {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: none;
+        }
+
+        #topUI {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            z-index: 50;
+            background: rgba(0,0,0,0.6);
+            padding: 10px;
+            border-radius: 10px;
+            border: 2px solid #00d4ff;
+        }
+
+        #lives {
+            color: #ff4757;
+            font-size: 1.3em;
+        }
+
+        #combo {
+            color: #ffa502;
+            font-size: 1.3em;
+        }
+
+        #score {
+            color: #2ed573;
+            font-size: 1.3em;
+        }
+
+        #audioStatus {
+            position: absolute;
+            top: 70px;
+            right: 10px;
+            background: rgba(46, 213, 115, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            z-index: 50;
+            display: none;
+        }
+
+        #targetLine {
+            position: absolute;
+            bottom: 140px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+            box-shadow: 0 0 20px #00d4ff;
+            z-index: 10;
+        }
+
+        #laserZone {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 130px;
+            background: linear-gradient(to top, rgba(0, 212, 255, 0.2), transparent);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px;
+            border-top: 3px solid #00d4ff;
+        }
+
+        .laser-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid;
+            cursor: pointer;
+            transition: all 0.1s;
+            box-shadow: 0 0 20px currentColor;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            background: rgba(0,0,0,0.8);
+        }
+
+        .laser-btn:active, .laser-btn.active {
+            transform: scale(0.9);
+            box-shadow: 0 0 40px currentColor;
+        }
+
+        .laser-btn.red { color: #ff4757; border-color: #ff4757; }
+        .laser-btn.blue { color: #3742fa; border-color: #3742fa; }
+        .laser-btn.green { color: #2ed573; border-color: #2ed573; }
+        .laser-btn.yellow { color: #ffa502; border-color: #ffa502; }
+
+        .falling-object {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            font-size: 2.5em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            filter: drop-shadow(0 0 10px currentColor);
+            animation: rotate 3s linear infinite;
+            transition: transform 0.1s;
+        }
+
+        .falling-object.hit {
+            animation: explode 0.3s ease-out forwards;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes explode {
+            0% { transform: scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: scale(2) rotate(180deg); opacity: 0; }
+        }
+
+        .falling-object.red { left: calc(12.5% - 30px); color: #ff4757; }
+        .falling-object.blue { left: calc(37.5% - 30px); color: #3742fa; }
+        .falling-object.green { left: calc(62.5% - 30px); color: #2ed573; }
+        .falling-object.yellow { left: calc(87.5% - 30px); color: #ffa502; }
+
+        .hit-effect {
+            position: absolute;
+            pointer-events: none;
+            font-weight: bold;
+            font-size: 1.5em;
+            animation: floatUp 1s ease-out forwards;
+            z-index: 20;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            white-space: nowrap;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-80px) scale(1.3); opacity: 0; }
+        }
+
+        .points-good { color: #2ed573; }
+        .points-bad { color: #ff4757; }
+        .points-bonus { color: #FFD700; font-size: 1.8em; }
+
+        .laser-beam {
+            position: absolute;
+            width: 6px;
+            height: 100vh;
+            bottom: 65px;
+            opacity: 0.9;
+            animation: laserShoot 0.15s ease-out forwards;
+            z-index: 8;
+            box-shadow: 0 0 30px currentColor;
+        }
+
+        @keyframes laserShoot {
+            0% { height: 0; opacity: 1; }
+            50% { height: 100vh; opacity: 1; }
+            100% { height: 100vh; opacity: 0; }
+        }
+
+        #progressBar {
+            position: absolute;
+            top: 70px;
+            left: 10%;
+            width: 80%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #00d4ff;
+        }
+
+        #progressFill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #ff00ff);
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        #endScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 26, 0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: white;
+            border: 3px solid #00d4ff;
+        }
+
+        #endScreen h2 {
+            color: #00d4ff;
+            font-size: 2.5em;
+            text-shadow: 0 0 20px #00d4ff;
+            margin-bottom: 20px;
+        }
+
+        #finalScore {
+            font-size: 4em;
+            margin: 20px;
+            color: #2ed573;
+            text-shadow: 0 0 20px #2ed573;
+        }
+
+        .stars {
+            font-size: 3em;
+            margin: 20px;
+        }
+
+        #stats {
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #ff00ff;
+            margin: 20px;
+            text-align: center;
+        }
+
+        .game-btn {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.3em;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            margin: 10px;
+        }
+
+        #levelIndicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            color: #00d4ff;
+            text-shadow: 0 0 30px #00d4ff;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 100;
+            text-align: center;
+        }
+
+        .show-level {
+            animation: showLevel 2s ease-out forwards;
+        }
+
+        @keyframes showLevel {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        @media (max-width: 600px) {
+            .laser-btn { width: 60px; height: 60px; font-size: 1.5em; }
+            .falling-object { width: 50px; height: 50px; font-size: 2em; }
+            #startScreen h1 { font-size: 1.6em; }
+            .level-select { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stars-bg" id="starsBg"></div>
+
+    <div id="startScreen">
+        <h1>🚀<br>CADETES DE<br>5to GRADO</h1>
+        <div class="developer">Desarrollado por Eliseo Espinoza</div>
+        
+        <div class="instructions">
+            <h3>🎮 ¡NUEVA MECÁNICA DE DISPARO!</h3>
+            <p>¡Dispara láseres estratégicamente!</p>
+            
+            <div class="strategy-box">
+                <div class="strategy-item shoot-bad">
+                    <span>☄️👾💣</span>
+                    <span>DISPARA = +150 pts (Bonus)</span>
+                </div>
+                <div class="strategy-item shoot-good">
+                    <span>🚀🛸⭐</span>
+                    <span>DISPARA = -50 pts (Penalización)</span>
+                </div>
+                <div style="margin-top: 10px; font-size: 0.9em; color: #aaa;">
+                    💡 Estrategia: Deja pasar los buenos, ¡destruye los malos!
+                </div>
+            </div>
+            
+            <div class="audio-hint">🔊 El audio se activará al iniciar</div>
+        </div>
+
+        <div class="level-select">
+            <button class="level-btn" onclick="startGame(1)">
+                <span class="level-number">1</span>
+                <span>🌌 Nebulosa</span>
+            </button>
+            <button class="level-btn" onclick="startGame(2)">
+                <span class="level-number">2</span>
+                <span>🪐 Órbita</span>
+            </button>
+            <button class="level-btn" onclick="startGame(3)">
+                <span class="level-number">3</span>
+                <span>⭐ Estelar</span>
+            </button>
+            <button class="level-btn" onclick="startGame(4)">
+                <span class="level-number">4</span>
+                <span>🌟 Galáctico</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="gameArea">
+        <div id="levelIndicator"></div>
+        <div id="audioStatus">🎵 Música activada</div>
+        
+        <div id="topUI">
+            <div id="lives">❤️❤️❤️</div>
+            <div id="score">0</div>
+            <div id="combo">Combo: 0</div>
+        </div>
+
+        <div id="progressBar">
+            <div id="progressFill"></div>
+        </div>
+
+        <div id="targetLine"></div>
+
+        <div id="laserZone">
+            <div class="laser-btn red" onclick="shoot('red')">🔴</div>
+            <div class="laser-btn blue" onclick="shoot('blue')">🔵</div>
+            <div class="laser-btn green" onclick="shoot('green')">🟢</div>
+            <div class="laser-btn yellow" onclick="shoot('yellow')">🟡</div>
+        </div>
+    </div>
+
+    <div id="endScreen">
+        <h2 id="endTitle">¡MISIÓN CUMPLIDA!</h2>
+        <div id="finalScore">0</div>
+        <div class="stars" id="stars"></div>
+        <div id="stats"></div>
+        <div>
+            <button class="game-btn" onclick="location.reload()">🔄 Jugar de Nuevo</button>
+        </div>
+        <div class="developer" style="margin-top: 20px;">Desarrollado por Eliseo Espinoza</div>
+    </div>
+
+    <script>
+        const levels = {
+            1: { name: "Nebulosa", speed: 2, spawnRate: 900, badChance: 0.35, duration: 45000 },
+            2: { name: "Órbita", speed: 3, spawnRate: 750, badChance: 0.4, duration: 50000 },
+            3: { name: "Estelar", speed: 4, spawnRate: 600, badChance: 0.45, duration: 55000 },
+            4: { name: "Galáctico", speed: 5, spawnRate: 450, badChance: 0.5, duration: 60000 }
+        };
+
+        const emojis = {
+            good: {
+                red: ['🚀', '🛸', '⭐', '🪐', '🌟'],
+                blue: ['🚀', '🛰️', '✨', '🌎', '💫'],
+                green: ['🚀', '👽', '🌟', '🌍', '🛸'],
+                yellow: ['🚀', '🤖', '💫', '🌏', '⭐']
+            },
+            bad: {
+                red: ['☄️', '💣', '🔥'],
+                blue: ['👾', '🌑', '⚡'],
+                green: ['🦠', '⚫', '☠️'],
+                yellow: ['🔥', '⚡', '💀']
+            }
+        };
+
+        let gameState = {
+            score: 0,
+            combo: 0,
+            maxCombo: 0,
+            lives: 3,
+            objects: [],
+            isPlaying: false,
+            level: 1,
+            speed: 0,
+            spawnRate: 0,
+            badChance: 0.35,
+            shotsFired: 0,
+            badDestroyed: 0,
+            goodDestroyed: 0,
+            badPassed: 0,
+            goodPassed: 0
+        };
+
+        let audio = null;
+        let gameLoopID;
+        let spawnID;
+        let progressInterval;
+
+        function createStarfield() {
+            const container = document.getElementById('starsBg');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 1 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(star);
+            }
+        }
+
+        async function startGame(levelNum) {
+            const config = levels[levelNum];
+            gameState.level = levelNum;
+            gameState.speed = config.speed;
+            gameState.spawnRate = config.spawnRate;
+            gameState.badChance = config.badChance;
+            
+            const indicator = document.getElementById('levelIndicator');
+            indicator.innerHTML = `NIVEL ${levelNum}<br><small>${config.name}</small>`;
+            indicator.classList.add('show-level');
+            
+            document.getElementById('startScreen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('startScreen').style.display = 'none';
+                document.getElementById('gameArea').style.display = 'block';
+            }, 500);
+
+            await initAudio(levelNum);
+            
+            setTimeout(() => {
+                gameState.isPlaying = true;
+                gameLoopID = requestAnimationFrame(gameLoop);
+                spawnID = setInterval(spawnObject, config.spawnRate);
+                startProgressTimer(config.duration);
+            }, 2000);
+        }
+
+        async function initAudio(levelNum) {
+            try {
+                const audioFiles = {
+                    1: "Neon Rhythm Strike.mp3",
+                    2: "Neon Rhythm Strike (1).mp3", 
+                    3: "Neon Rhythm Strike (2).mp3",
+                    4: "Neon Rhythm Strike (3).mp3"
+                };
+                
+                audio = new Audio(audioFiles[levelNum]);
+                audio.loop = true;
+                audio.volume = 0.7;
+                
+                await new Promise((resolve) => {
+                    audio.addEventListener('canplaythrough', resolve, { once: true });
+                    setTimeout(resolve, 1000);
+                });
+                
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        document.getElementById('audioStatus').style.display = 'block';
+                        setTimeout(() => document.getElementById('audioStatus').style.display = 'none', 3000);
+                    }).catch(() => console.log('Esperando interacción'));
+                }
+            } catch (e) {
+                console.error('Audio error:', e);
+            }
+        }
+
+        function spawnObject() {
+            if (!gameState.isPlaying) return;
+            
+            const colors = ['red', 'blue', 'green', 'yellow'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const isBad = Math.random() < gameState.badChance;
+            
+            const obj = document.createElement('div');
+            obj.className = `falling-object ${color}`;
+            obj.style.top = '-80px';
+            obj.dataset.color = color;
+            obj.dataset.isBad = isBad;
+            
+            const emojiList = isBad ? emojis.bad[color] : emojis.good[color];
+            const emoji = emojiList[Math.floor(Math.random() * emojiList.length)];
+            obj.textContent = emoji;
+            
+            document.getElementById('gameArea').appendChild(obj);
+            
+            gameState.objects.push({
+                element: obj,
+                y: -80,
+                color: color,
+                isBad: isBad,
+                destroyed: false,
+                emoji: emoji
+            });
+        }
+
+        function gameLoop() {
+            if (!gameState.isPlaying) return;
+            
+            const targetLine = window.innerHeight - 140;
+            const missLine = window.innerHeight;
+            
+            gameState.objects.forEach((obj, index) => {
+                if (obj.destroyed) return;
+                
+                obj.y += gameState.speed;
+                obj.element.style.top = obj.y + 'px';
+                
+                if (obj.y > missLine) {
+                    if (obj.isBad) {
+                        gameState.lives--;
+                        gameState.badPassed++;
+                        showFeedback(obj.element.offsetLeft + 30, targetLine, 'points-bad', '¡Te golpearon! 💥');
+                        updateLives();
+                        
+                        if (gameState.lives <= 0) {
+                            endGame(false);
+                            return;
+                        }
+                    } else {
+                        gameState.goodPassed++;
+                        if (gameState.combo > 0) gameState.combo--;
+                    }
+                    
+                    obj.element.remove();
+                    gameState.objects.splice(index, 1);
+                    updateUI();
+                }
+            });
+            
+            gameLoopID = requestAnimationFrame(gameLoop);
+        }
+
+        function shoot(color) {
+            if (!gameState.isPlaying) return;
+            
+            if (audio && audio.paused) audio.play().catch(() => {});
+            
+            const btn = document.querySelector(`.laser-btn.${color}`);
+            btn.classList.add('active');
+            setTimeout(() => btn.classList.remove('active'), 100);
+            
+            createLaser(color);
+            gameState.shotsFired++;
+            
+            // Buscar el objeto más alto (más cercano al láser) del color correcto
+            const targets = gameState.objects.filter(obj => 
+                obj.color === color && !obj.destroyed
+            );
+            
+            if (targets.length > 0) {
+                // Disparar al que está más arriba (menor valor Y)
+                const target = targets.reduce((prev, curr) => 
+                    prev.y < curr.y ? prev : curr
+                );
+                
+                target.destroyed = true;
+                
+                if (target.isBad) {
+                    // ¡BIEN! Destruiste un malo
+                    handleBadDestroyed(target);
+                } else {
+                    // ¡UPS! Destruiste un bueno
+                    handleGoodDestroyed(target);
+                }
+            }
+            
+            updateUI();
+        }
+
+        function createLaser(color) {
+            const laser = document.createElement('div');
+            laser.className = 'laser-beam';
+            
+            const colors = {
+                red: '#ff4757',
+                blue: '#3742fa',
+                green: '#2ed573',
+                yellow: '#ffa502'
+            };
+            
+            laser.style.background = colors[color];
+            laser.style.boxShadow = `0 0 30px ${colors[color]}`;
+            
+            const positions = { red: '12.5%', blue: '37.5%', green: '62.5%', yellow: '87.5%' };
+            laser.style.left = `calc(${positions[color]} - 3px)`;
+            
+            document.getElementById('gameArea').appendChild(laser);
+            setTimeout(() => laser.remove(), 150);
+        }
+
+        function handleBadDestroyed(target) {
+            const points = 150;
+            gameState.score += points;
+            gameState.combo++;
+            if (gameState.combo > gameState.maxCombo) gameState.maxCombo = gameState.combo;
+            gameState.badDestroyed++;
+            
+            target.element.classList.add('hit');
+            showFeedback(
+                target.element.offsetLeft + 30, 
+                target.y + 30, 
+                'points-bonus', 
+                `+${points} ¡EXCELENTE!`
+            );
+            
+            setTimeout(() => {
+                target.element.remove();
+                gameState.objects = gameState.objects.filter(o => o !== target);
+            }, 300);
+        }
+
+        function handleGoodDestroyed(target) {
+            const penalty = 50;
+            gameState.score = Math.max(0, gameState.score - penalty);
+            gameState.combo = 0;
+            gameState.goodDestroyed++;
+            
+            target.element.classList.add('hit');
+            showFeedback(
+                target.element.offsetLeft + 30, 
+                target.y + 30, 
+                'points-bad', 
+                `-${penalty} ¡CUIDADO!`
+            );
+            
+            setTimeout(() => {
+                target.element.remove();
+                gameState.objects = gameState.objects.filter(o => o !== target);
+            }, 300);
+        }
+
+        function showFeedback(x, y, className, text) {
+            const feedback = document.createElement('div');
+            feedback.className = `hit-effect ${className}`;
+            feedback.textContent = text;
+            feedback.style.left = (x - 50) + 'px';
+            feedback.style.top = y + 'px';
+            document.getElementById('gameArea').appendChild(feedback);
+            setTimeout(() => feedback.remove(), 800);
+        }
+
+        function updateLives() {
+            const hearts = '❤️'.repeat(gameState.lives) + '🖤'.repeat(3 - gameState.lives);
+            document.getElementById('lives').textContent = hearts;
+        }
+
+        function updateUI() {
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('combo').textContent = `Combo: ${gameState.combo}`;
+        }
+
+        function startProgressTimer(duration) {
+            const startTime = Date.now();
+            
+            progressInterval = setInterval(() => {
+                if (!gameState.isPlaying) {
+                    clearInterval(progressInterval);
+                    return;
+                }
+                
+                const elapsed = Date.now() - startTime;
+                const progress = (elapsed / duration) * 100;
+                document.getElementById('progressFill').style.width = progress + '%';
+                
+                if (progress >= 100) endGame(true);
+            }, 100);
+        }
+
+        function endGame(completed) {
+            gameState.isPlaying = false;
+            clearInterval(spawnID);
+            cancelAnimationFrame(gameLoopID);
+            clearInterval(progressInterval);
+            
+            if (audio) {
+                audio.pause();
+                audio.currentTime = 0;
+            }
+            
+            const accuracy = gameState.badDestroyed / (gameState.badDestroyed + gameState.badPassed) || 0;
+            let stars = '⭐';
+            let title = completed ? '¡NIVEL COMPLETADO!' : 'GAME OVER';
+            
+            if (accuracy > 0.6) stars = '⭐⭐';
+            if (accuracy > 0.8) stars = '⭐⭐⭐';
+            
+            if (!completed) {
+                title = '💥 MISIÓN FALLIDA';
+                document.getElementById('endTitle').style.color = '#ff4757';
+            } else {
+                document.getElementById('endTitle').style.color = '#00d4ff';
+            }
+            
+            document.getElementById('endTitle').textContent = title;
+            document.getElementById('finalScore').textContent = gameState.score;
+            document.getElementById('stars').textContent = stars;
+            document.getElementById('stats').innerHTML = `
+                <p><strong>Nivel:</strong> ${levels[gameState.level].name}</p>
+                <p><strong style="color:#2ed573">Malos destruidos:</strong> ${gameState.badDestroyed}</p>
+                <p><strong style="color:#ff4757">Buenos destruidos:</strong> ${gameState.goodDestroyed}</p>
+                <p><strong>Malos que pasaron:</strong> ${gameState.badPassed} (te quitaron vidas)</p>
+                <p><strong>Disparos:</strong> ${gameState.shotsFired}</p>
+                <p><strong>Combo máximo:</strong> ${gameState.maxCombo}</p>
+                <p><strong>Precisión defensiva:</strong> ${(accuracy * 100).toFixed(1)}%</p>
+            `;
+            
+            document.getElementById('endScreen').style.display = 'flex';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            const keyMap = {
+                'ArrowLeft': 'red', 'a': 'red',
+                'ArrowDown': 'blue', 's': 'blue',
+                'ArrowUp': 'green', 'w': 'green',
+                'ArrowRight': 'yellow', 'd': 'yellow'
+            };
+            
+            if (keyMap[e.key]) shoot(keyMap[e.key]);
+        });
+
+        createStarfield();
+        document.addEventListener('gesturestart', e => e.preventDefault());
+    </script>
+
+</body>
+</html>
