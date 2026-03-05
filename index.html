@@ -14,33 +14,17 @@
             -webkit-user-select: none;
         }
 
-        body {
-            font-family: 'Courier New', monospace;
-            background: #000;
+        html, body {
+            width: 100%;
+            height: 100%;
             overflow: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* CRT Effect */
-        .crt::before {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 2;
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
+            background: #000;
+            font-family: 'Courier New', monospace;
         }
 
         /* Pantalla de inicio */
         #startScreen {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -51,11 +35,12 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            border: 4px solid #0f0;
+            border: 3px solid #0f0;
+            padding: 10px;
         }
 
         #startScreen h1 {
-            font-size: 1.8em;
+            font-size: clamp(1.2em, 5vw, 2em);
             color: #0f0;
             text-align: center;
             margin-bottom: 10px;
@@ -65,29 +50,31 @@
 
         @keyframes blink {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
+            50% { opacity: 0.7; }
         }
 
         .developer {
             color: #f0f;
             font-size: 0.9em;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .instructions {
             color: #0f0;
             text-align: center;
-            margin: 15px;
-            font-size: 0.85em;
-            max-width: 450px;
+            margin: 10px;
+            font-size: clamp(0.8em, 3vw, 1em);
+            max-width: 600px;
             border: 2px solid #0f0;
             padding: 15px;
             background: rgba(0,255,0,0.1);
+            width: 90%;
         }
 
         .controls-info {
             margin-top: 10px;
             color: #fff;
+            line-height: 1.8;
         }
 
         .key {
@@ -95,6 +82,7 @@
             padding: 3px 8px;
             border: 1px solid #666;
             color: #0f0;
+            margin: 0 2px;
         }
 
         .level-select {
@@ -102,47 +90,53 @@
             grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin: 15px;
-            max-width: 350px;
+            width: 90%;
+            max-width: 400px;
         }
 
         .level-btn {
             background: #000;
             border: 2px solid #0f0;
-            padding: 12px;
-            font-size: 0.9em;
+            padding: 15px;
+            font-size: clamp(0.9em, 3vw, 1.1em);
             color: #0f0;
             cursor: pointer;
             font-family: 'Courier New', monospace;
+            font-weight: bold;
         }
 
-        .level-btn:hover {
+        .level-btn:hover, .level-btn:active {
             background: #0f0;
             color: #000;
         }
 
         /* Área de juego */
         #gameArea {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: none;
             background: #000;
+            overflow: hidden;
         }
 
         /* UI */
         #topUI {
-            position: absolute;
+            position: fixed;
             top: 5px;
             left: 5px;
             right: 5px;
             display: flex;
             justify-content: space-between;
             color: #0f0;
-            font-size: 1em;
+            font-size: clamp(0.8em, 3vw, 1em);
             z-index: 50;
-            background: #000;
-            padding: 5px;
-            border-bottom: 2px solid #0f0;
+            background: rgba(0,0,0,0.9);
+            padding: 8px;
+            border: 2px solid #0f0;
+            font-weight: bold;
         }
 
         #lives { color: #f00; }
@@ -150,44 +144,48 @@
 
         /* Nave del jugador */
         #player {
-            position: absolute;
-            bottom: 60px;
+            position: fixed;
+            bottom: 120px;
             width: 40px;
-            height: 30px;
-            font-size: 2em;
+            height: 40px;
+            font-size: 2.2em;
             z-index: 10;
             text-align: center;
-            transition: left 0.1s;
+            transform: translateX(-50%);
+            filter: drop-shadow(0 0 10px #0f0);
         }
 
         /* Disparos */
         .shot {
-            position: absolute;
+            position: fixed;
             width: 4px;
             height: 15px;
             background: #0f0;
             box-shadow: 0 0 8px #0f0;
             z-index: 9;
+            transform: translateX(-50%);
         }
 
         .enemy-shot {
-            position: absolute;
+            position: fixed;
             width: 4px;
             height: 10px;
             background: #f00;
             box-shadow: 0 0 5px #f00;
             z-index: 9;
+            transform: translateX(-50%);
         }
 
         /* Enemigos */
         .enemy {
-            position: absolute;
-            width: 35px;
-            height: 35px;
-            font-size: 1.6em;
-            text-align: center;
+            position: fixed;
+            width: clamp(30px, 8vw, 45px);
+            height: clamp(30px, 8vw, 45px);
+            font-size: clamp(1.2em, 4vw, 1.8em);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             z-index: 5;
-            transition: transform 0.1s;
         }
 
         .enemy.bad { filter: drop-shadow(0 0 5px #f00); }
@@ -195,87 +193,119 @@
 
         /* Explosión */
         .explosion {
-            position: absolute;
+            position: fixed;
             font-size: 2em;
             animation: explode 0.4s ease-out forwards;
             z-index: 15;
             pointer-events: none;
+            transform: translate(-50%, -50%);
         }
 
         @keyframes explode {
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(1.5); opacity: 0; }
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
         }
 
         /* Puntos */
         .points {
-            position: absolute;
+            position: fixed;
             font-weight: bold;
             font-size: 1em;
             animation: floatUp 0.6s ease-out forwards;
             z-index: 20;
             pointer-events: none;
+            transform: translateX(-50%);
         }
 
         @keyframes floatUp {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-30px); opacity: 0; }
+            0% { transform: translateX(-50%) translateY(0); opacity: 1; }
+            100% { transform: translateX(-50%) translateY(-30px); opacity: 0; }
         }
 
         .points-good { color: #0f0; }
         .points-bad { color: #f00; }
 
-        /* Controles móviles */
+        /* Controles móviles - SIEMPRE VISIBLES EN MÓVIL */
         #mobileControls {
-            position: absolute;
+            position: fixed;
             bottom: 0;
+            left: 0;
             width: 100%;
-            height: 55px;
-            background: #111;
+            height: 100px;
+            background: rgba(0,0,0,0.95);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 5px 15px;
-            border-top: 2px solid #0f0;
+            padding: 10px 20px;
+            border-top: 3px solid #0f0;
             z-index: 100;
         }
 
         .move-btn {
-            width: 50px;
-            height: 45px;
+            width: 70px;
+            height: 70px;
             background: #000;
-            border: 2px solid #0f0;
+            border: 3px solid #0f0;
+            border-radius: 10px;
             color: #0f0;
-            font-size: 1.3em;
+            font-size: 2em;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
         }
 
         .move-btn:active {
             background: #0f0;
             color: #000;
+            transform: scale(0.95);
         }
 
         #fireBtn {
-            width: 100px;
-            height: 45px;
+            width: 120px;
+            height: 70px;
             background: #f00;
-            border: 2px solid #fff;
+            border: 3px solid #fff;
+            border-radius: 10px;
             color: #fff;
-            font-size: 0.9em;
+            font-size: 1.1em;
             font-weight: bold;
             cursor: pointer;
+            box-shadow: 0 0 20px #f00;
+            touch-action: manipulation;
         }
 
         #fireBtn:active {
+            transform: scale(0.95);
             background: #900;
+        }
+
+        /* En PC ocultar controles táctiles */
+        @media (min-width: 769px) {
+            #mobileControls {
+                display: none !important;
+            }
+            #player {
+                bottom: 20px;
+            }
+        }
+
+        /* En móvil ajustar nave */
+        @media (max-width: 768px) {
+            #player {
+                bottom: 110px;
+            }
+            #startScreen h1 {
+                font-size: 1.3em;
+            }
         }
 
         /* Pantalla final */
         #endScreen {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -286,18 +316,19 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            border: 4px solid #0f0;
+            border: 3px solid #0f0;
+            padding: 20px;
         }
 
         #endScreen h2 {
             color: #0f0;
-            font-size: 1.8em;
+            font-size: clamp(1.5em, 6vw, 2em);
             margin-bottom: 15px;
-            animation: blink 1s infinite;
+            text-align: center;
         }
 
         #finalScore {
-            font-size: 2.5em;
+            font-size: clamp(2em, 8vw, 3em);
             color: #0f0;
             margin: 15px;
         }
@@ -306,65 +337,46 @@
             background: #000;
             color: #0f0;
             border: 2px solid #0f0;
-            padding: 12px 25px;
+            padding: 15px 30px;
             font-size: 1em;
             cursor: pointer;
             margin: 10px;
             font-family: 'Courier New', monospace;
+            font-weight: bold;
         }
 
-        .game-btn:hover {
+        .game-btn:active {
             background: #0f0;
             color: #000;
         }
-
-        /* Responsive */
-        @media (min-width: 768px) {
-            #mobileControls { display: none; }
-            #player { bottom: 10px; }
-        }
-
-        @media (max-width: 767px) {
-            #startScreen h1 { font-size: 1.4em; }
-            .enemy { width: 30px; height: 30px; font-size: 1.4em; }
-            #player { width: 35px; height: 25px; font-size: 1.7em; }
-        }
     </style>
 </head>
-<body class="crt">
+<body>
 
     <div id="startScreen">
         <h1>👾 CADETES<br>SPACE INVADERS 👾</h1>
         <div class="developer">Desarrollado por Eliseo Espinoza</div>
         
         <div class="instructions">
-            <div style="color:#fff; margin-bottom:10px;">
+            <div style="color:#fff; margin-bottom:10px; font-size:1.1em;">
                 DESTRUYE LOS MALOS • EVITA LOS BUENOS
             </div>
             
             <div class="controls-info">
-                <strong>PC:</strong> <span class="key">←</span> <span class="key">→</span> Mover • <span class="key">ESPACIO</span> Disparar<br>
-                <strong>Celular:</strong> Botones ← → y 🔴
+                <div style="margin-bottom:8px;"><strong>💻 PC:</strong> <span class="key">←</span> <span class="key">→</span> Mover <span class="key">ESPACIO</span> Disparar</div>
+                <div><strong>📱 Celular:</strong> Usa los botones de abajo 👇</div>
             </div>
             
-            <div style="margin-top:10px; font-size:0.8em;">
+            <div style="margin-top:12px; font-size:0.9em;">
                 👾☄️💣 = +100 pts | 🚀⭐✨ = -50 pts
             </div>
         </div>
 
         <div class="level-select">
-            <button class="level-btn" onclick="startGame(1)">
-                NIVEL 1<br>FÁCIL
-            </button>
-            <button class="level-btn" onclick="startGame(2)">
-                NIVEL 2<br>NORMAL
-            </button>
-            <button class="level-btn" onclick="startGame(3)">
-                NIVEL 3<br>DIFÍCIL
-            </button>
-            <button class="level-btn" onclick="startGame(4)">
-                NIVEL 4<br>EXTREMO
-            </button>
+            <button class="level-btn" onclick="startGame(1)">NIVEL 1<br>FÁCIL</button>
+            <button class="level-btn" onclick="startGame(2)">NIVEL 2<br>NORMAL</button>
+            <button class="level-btn" onclick="startGame(3)">NIVEL 3<br>DIFÍCIL</button>
+            <button class="level-btn" onclick="startGame(4)">NIVEL 4<br>EXTREMO</button>
         </div>
     </div>
 
@@ -377,9 +389,10 @@
 
         <div id="player">🛸</div>
 
+        <!-- Controles móviles - SIEMPRE PRESENTES -->
         <div id="mobileControls">
             <div class="move-btn" id="leftBtn">←</div>
-            <button id="fireBtn">🔥 FUEGO</button>
+            <button id="fireBtn">🔥<br>FUEGO</button>
             <div class="move-btn" id="rightBtn">→</div>
         </div>
     </div>
@@ -387,22 +400,22 @@
     <div id="endScreen">
         <h2 id="endTitle">GAME OVER</h2>
         <div id="finalScore">0</div>
-        <div id="stats" style="color:#0f0; margin:10px; text-align:center; font-size:0.9em;"></div>
-        <button class="game-btn" onclick="location.reload()">JUGAR DE NUEVO</button>
+        <div id="stats" style="color:#0f0; margin:10px; text-align:center;"></div>
+        <button class="game-btn" onclick="location.reload()">🔄 JUGAR DE NUEVO</button>
         <div class="developer" style="margin-top:15px;">Desarrollado por Eliseo Espinoza</div>
     </div>
 
     <script>
-        // Configuración de niveles
+        // Configuración de niveles - MÁS ENEMIGOS
         const levels = {
-            1: { rows: 3, cols: 6, speed: 0.3, dropSpeed: 20, shootChance: 0.001 },
-            2: { rows: 4, cols: 7, speed: 0.5, dropSpeed: 15, shootChance: 0.002 },
-            3: { rows: 4, cols: 8, speed: 0.7, dropSpeed: 12, shootChance: 0.003 },
-            4: { rows: 5, cols: 8, speed: 1, dropSpeed: 10, shootChance: 0.005 }
+            1: { rows: 4, cols: 10, speed: 0.4, shootChance: 0.002 },
+            2: { rows: 5, cols: 12, speed: 0.6, shootChance: 0.003 },
+            3: { rows: 5, cols: 14, speed: 0.8, shootChance: 0.004 },
+            4: { rows: 6, cols: 15, speed: 1.2, shootChance: 0.006 }
         };
 
-        const badEmojis = ['👾', '👽', '☄️', '💣', '🦠'];
-        const goodEmojis = ['🚀', '⭐', '🛸', '✨', '🌟'];
+        const badEmojis = ['👾', '👽', '☄️', '💣', '🦠', '🔥'];
+        const goodEmojis = ['🚀', '⭐', '🛸', '✨', '🌟', '💫'];
 
         let gameState = {
             score: 0,
@@ -414,9 +427,8 @@
             shots: [],
             enemyShots: [],
             direction: 1,
-            dropTimer: 0,
-            speed: 0.3,
-            shootChance: 0.001
+            speed: 0.4,
+            shootChance: 0.002
         };
 
         let audio;
@@ -456,13 +468,15 @@
         }
 
         function createEnemies(rows, cols) {
-            const gameArea = document.getElementById('gameArea');
-            const width = gameArea.clientWidth;
-            const startX = (width - (cols * 45)) / 2;
+            const width = window.innerWidth;
+            const enemySize = Math.min(45, width / (cols + 2));
+            const spacing = enemySize + 5;
+            const totalWidth = cols * spacing;
+            const startX = (width - totalWidth) / 2;
             
             for (let row = 0; row < rows; row++) {
                 for (let col = 0; col < cols; col++) {
-                    const isBad = Math.random() > 0.2; // 80% malos, 20% buenos
+                    const isBad = Math.random() > 0.15; // 85% malos, 15% buenos
                     const emoji = isBad ? 
                         badEmojis[Math.floor(Math.random() * badEmojis.length)] :
                         goodEmojis[Math.floor(Math.random() * goodEmojis.length)];
@@ -470,16 +484,20 @@
                     const enemy = document.createElement('div');
                     enemy.className = `enemy ${isBad ? 'bad' : 'good'}`;
                     enemy.textContent = emoji;
-                    enemy.style.left = (startX + col * 45) + 'px';
-                    enemy.style.top = (50 + row * 45) + 'px';
+                    enemy.style.left = (startX + col * spacing) + 'px';
+                    enemy.style.top = (40 + row * spacing) + 'px';
+                    enemy.style.width = enemySize + 'px';
+                    enemy.style.height = enemySize + 'px';
+                    enemy.style.fontSize = (enemySize * 0.8) + 'px';
                     enemy.dataset.isBad = isBad;
                     
-                    gameArea.appendChild(enemy);
+                    document.getElementById('gameArea').appendChild(enemy);
                     
                     gameState.enemies.push({
                         element: enemy,
-                        x: startX + col * 45,
-                        y: 50 + row * 45,
+                        x: startX + col * spacing,
+                        y: 40 + row * spacing,
+                        startX: startX + col * spacing,
                         isBad: isBad,
                         row: row,
                         col: col
@@ -491,17 +509,27 @@
         function gameLoop() {
             if (!gameState.isPlaying) return;
             
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const playerBottom = window.innerWidth >= 769 ? 20 : 110;
+            
             // Mover jugador
-            if (moveLeft) gameState.playerX -= 1.5;
-            if (moveRight) gameState.playerX += 1.5;
-            gameState.playerX = Math.max(5, Math.min(95, gameState.playerX));
-            document.getElementById('player').style.left = gameState.playerX + '%';
+            if (moveLeft) gameState.playerX -= 1.2;
+            if (moveRight) gameState.playerX += 1.2;
+            gameState.playerX = Math.max(3, Math.min(97, gameState.playerX));
+            
+            const player = document.getElementById('player');
+            player.style.left = gameState.playerX + '%';
+            player.style.bottom = playerBottom + 'px';
             
             // Mover formación de enemigos
             let hitEdge = false;
+            const enemyWidth = gameState.enemies.length > 0 ? 
+                parseInt(gameState.enemies[0].element.style.width) : 40;
+            
             gameState.enemies.forEach(enemy => {
                 enemy.x += gameState.speed * gameState.direction;
-                if (enemy.x <= 10 || enemy.x >= window.innerWidth - 50) {
+                if (enemy.x <= 5 || enemy.x >= width - enemyWidth - 5) {
                     hitEdge = true;
                 }
             });
@@ -510,7 +538,7 @@
             if (hitEdge) {
                 gameState.direction *= -1;
                 gameState.enemies.forEach(enemy => {
-                    enemy.y += 20;
+                    enemy.y += 25;
                     enemy.element.style.top = enemy.y + 'px';
                 });
             }
@@ -519,8 +547,8 @@
             gameState.enemies.forEach(enemy => {
                 enemy.element.style.left = enemy.x + 'px';
                 
-                // Verificar si llegaron abajo
-                if (enemy.y > window.innerHeight - 100) {
+                // Si llegan abajo
+                if (enemy.y > height - playerBottom - 60) {
                     endGame(false);
                     return;
                 }
@@ -528,19 +556,21 @@
             
             // Enemigos disparan
             if (Math.random() < gameState.shootChance && gameState.enemies.length > 0) {
-                const shooter = gameState.enemies[Math.floor(Math.random() * gameState.enemies.length)];
-                createEnemyShot(shooter.x + 15, shooter.y + 30);
+                const shooters = gameState.enemies.filter(e => e.isBad);
+                if (shooters.length > 0) {
+                    const shooter = shooters[Math.floor(Math.random() * shooters.length)];
+                    createEnemyShot(shooter.x + parseInt(shooter.element.style.width)/2, shooter.y + 30);
+                }
             }
             
             // Mover disparos del jugador
             gameState.shots.forEach((shot, index) => {
-                shot.y -= 8;
-                shot.element.style.top = shot.y + 'px';
+                shot.y -= 10;
+                shot.element.style.bottom = (window.innerHeight - shot.y) + 'px';
                 
                 // Colisión con enemigos
                 gameState.enemies.forEach((enemy, eIndex) => {
                     if (isColliding(shot.element, enemy.element)) {
-                        // Impacto!
                         if (enemy.isBad) {
                             gameState.score += 100;
                             showPoints(enemy.x, enemy.y, '+100', 'good');
@@ -549,17 +579,17 @@
                             showPoints(enemy.x, enemy.y, '-50', 'bad');
                         }
                         
-                        createExplosion(enemy.x, enemy.y);
+                        createExplosion(enemy.x + 20, enemy.y + 20);
                         enemy.element.remove();
                         gameState.enemies.splice(eIndex, 1);
                         shot.element.remove();
                         gameState.shots.splice(index, 1);
                         updateUI();
                         
-                        // Victoria si destruye todos los malos
+                        // Victoria si no quedan malos
                         const badsLeft = gameState.enemies.filter(e => e.isBad).length;
                         if (badsLeft === 0) {
-                            endGame(true);
+                            setTimeout(() => endGame(true), 500);
                         }
                     }
                 });
@@ -572,15 +602,14 @@
             
             // Mover disparos enemigos
             gameState.enemyShots.forEach((shot, index) => {
-                shot.y += 5;
+                shot.y += 6;
                 shot.element.style.top = shot.y + 'px';
                 
-                // Colisión con jugador
                 const player = document.getElementById('player');
                 if (isColliding(shot.element, player)) {
                     gameState.lives--;
                     updateLives();
-                    createExplosion(gameState.playerX, window.innerHeight - 80);
+                    createExplosion(gameState.playerX + '%', window.innerHeight - playerBottom - 20);
                     shot.element.remove();
                     gameState.enemyShots.splice(index, 1);
                     
@@ -589,7 +618,7 @@
                     }
                 }
                 
-                if (shot.y > window.innerHeight) {
+                if (shot.y > height) {
                     shot.element.remove();
                     gameState.enemyShots.splice(index, 1);
                 }
@@ -609,15 +638,21 @@
         function shoot() {
             if (!gameState.isPlaying) return;
             
+            // Evitar disparos múltiples muy rápidos
+            if (gameState.shots.length > 0) {
+                const lastShot = gameState.shots[gameState.shots.length - 1];
+                if (window.innerHeight - lastShot.y < 50) return;
+            }
+            
             const shot = document.createElement('div');
             shot.className = 'shot';
-            shot.style.left = `calc(${gameState.playerX}% + 18px)`;
-            shot.style.top = (window.innerHeight - 90) + 'px';
+            shot.style.left = gameState.playerX + '%';
+            shot.style.bottom = (window.innerWidth >= 769 ? 60 : 150) + 'px';
             document.getElementById('gameArea').appendChild(shot);
             
             gameState.shots.push({
                 element: shot,
-                y: window.innerHeight - 90
+                y: window.innerHeight - (window.innerWidth >= 769 ? 60 : 150)
             });
         }
 
@@ -638,8 +673,8 @@
             const exp = document.createElement('div');
             exp.className = 'explosion';
             exp.textContent = '💥';
-            exp.style.left = x + 'px';
-            exp.style.top = y + 'px';
+            exp.style.left = (typeof x === 'string' ? x : x + 'px');
+            exp.style.top = (typeof y === 'string' ? y : y + 'px');
             document.getElementById('gameArea').appendChild(exp);
             setTimeout(() => exp.remove(), 400);
         }
@@ -648,7 +683,7 @@
             const points = document.createElement('div');
             points.className = `points points-${type}`;
             points.textContent = text;
-            points.style.left = x + 'px';
+            points.style.left = (typeof x === 'string' ? x : x + 'px');
             points.style.top = y + 'px';
             document.getElementById('gameArea').appendChild(points);
             setTimeout(() => points.remove(), 600);
@@ -669,25 +704,52 @@
                     e.preventDefault();
                     shoot();
                 }
-                if (e.key === 'ArrowLeft' || e.key === 'a') moveLeft = true;
-                if (e.key === 'ArrowRight' || e.key === 'd') moveRight = true;
+                if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') moveLeft = true;
+                if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moveRight = true;
             });
             
             document.addEventListener('keyup', (e) => {
-                if (e.key === 'ArrowLeft' || e.key === 'a') moveLeft = false;
-                if (e.key === 'ArrowRight' || e.key === 'd') moveRight = false;
+                if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') moveLeft = false;
+                if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moveRight = false;
             });
             
-            // Móvil
+            // Controles táctiles - MEJORADOS
             const leftBtn = document.getElementById('leftBtn');
             const rightBtn = document.getElementById('rightBtn');
             const fireBtn = document.getElementById('fireBtn');
             
-            leftBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveLeft = true; });
-            leftBtn.addEventListener('touchend', () => moveLeft = false);
-            rightBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveRight = true; });
-            rightBtn.addEventListener('touchend', () => moveRight = false);
-            fireBtn.addEventListener('touchstart', (e) => { e.preventDefault(); shoot(); });
+            // Prevenir comportamientos por defecto
+            [leftBtn, rightBtn, fireBtn].forEach(btn => {
+                btn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, { passive: false });
+                
+                btn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, { passive: false });
+            });
+            
+            // Botón izquierda
+            leftBtn.addEventListener('touchstart', () => { moveLeft = true; });
+            leftBtn.addEventListener('touchend', () => { moveLeft = false; });
+            leftBtn.addEventListener('mousedown', () => { moveLeft = true; });
+            leftBtn.addEventListener('mouseup', () => { moveLeft = false; });
+            leftBtn.addEventListener('mouseleave', () => { moveLeft = false; });
+            
+            // Botón derecha
+            rightBtn.addEventListener('touchstart', () => { moveRight = true; });
+            rightBtn.addEventListener('touchend', () => { moveRight = false; });
+            rightBtn.addEventListener('mousedown', () => { moveRight = true; });
+            rightBtn.addEventListener('mouseup', () => { moveRight = false; });
+            rightBtn.addEventListener('mouseleave', () => { moveRight = false; });
+            
+            // Botón disparo
+            fireBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                shoot();
+            });
             fireBtn.addEventListener('click', shoot);
         }
 
@@ -701,15 +763,23 @@
             document.getElementById('endTitle').style.color = won ? '#0f0' : '#f00';
             document.getElementById('finalScore').textContent = gameState.score;
             
-            const badsDestroyed = gameState.enemies.filter(e => !e.isBad).length; // Aproximado
+            const totalEnemies = gameState.enemiesDestroyed + gameState.goodDestroyed;
             document.getElementById('stats').innerHTML = `
-                NIVEL ${gameState.level} COMPLETADO<br>
-                PUNTUACIÓN FINAL: ${gameState.score}
+                NIVEL ${gameState.level}<br>
+                PUNTUACIÓN: ${gameState.score}<br>
+                ${won ? '¡Excelente trabajo, Cadete!' : 'Inténtalo de nuevo'}
             `;
         }
 
-        // Prevenir zoom
-        document.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+        // Prevenir zoom y scroll
+        document.addEventListener('touchmove', (e) => {
+            if (e.target.closest('#mobileControls')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        document.addEventListener('gesturestart', (e) => e.preventDefault());
+        document.addEventListener('dblclick', (e) => e.preventDefault());
     </script>
 
 </body>
