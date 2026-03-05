@@ -114,12 +114,6 @@
             box-shadow: 0 0 30px rgba(0, 212, 255, 0.6);
         }
 
-        .level-number {
-            font-size: 2em;
-            display: block;
-            margin-bottom: 5px;
-        }
-
         .instructions {
             color: #fff;
             text-align: center;
@@ -138,25 +132,35 @@
             margin-bottom: 10px;
         }
 
-        .strategy-box {
-            background: rgba(255,0,255,0.2);
-            border: 2px solid #ff00ff;
-            border-radius: 10px;
-            padding: 15px;
+        .controls-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
             margin-top: 15px;
+            text-align: left;
+            font-size: 0.9em;
         }
 
-        .strategy-item {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin: 8px 0;
-            font-size: 0.95em;
+        .control-box {
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #00d4ff;
         }
 
-        .shoot-good { color: #ff4757; }
-        .shoot-bad { color: #2ed573; }
+        .control-box h4 {
+            color: #ffa502;
+            margin-bottom: 8px;
+        }
+
+        .key {
+            display: inline-block;
+            background: #333;
+            padding: 2px 8px;
+            border-radius: 5px;
+            border: 1px solid #666;
+            margin: 2px;
+        }
 
         .audio-hint {
             color: #ffa502;
@@ -211,22 +215,33 @@
             font-size: 1.3em;
         }
 
-        #audioStatus {
+        #selectedCannon {
             position: absolute;
             top: 70px;
-            right: 10px;
-            background: rgba(46, 213, 115, 0.8);
+            left: 50%;
+            transform: translateX(-50%);
             color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.8em;
+            font-size: 1.2em;
+            background: rgba(0,0,0,0.7);
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 2px solid #00d4ff;
             z-index: 50;
-            display: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cannon-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
         }
 
         #targetLine {
             position: absolute;
-            bottom: 140px;
+            bottom: 180px;
             left: 0;
             width: 100%;
             height: 4px;
@@ -235,50 +250,114 @@
             z-index: 10;
         }
 
-        #laserZone {
+        #targetLine::before {
+            content: '⚡ ZONA DE DEFENSA ⚡';
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #00d4ff;
+            font-weight: bold;
+            font-size: 1em;
+            text-shadow: 0 0 10px #00d4ff;
+            white-space: nowrap;
+        }
+
+        /* Zona de controles */
+        #controlZone {
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 130px;
+            height: 170px;
             background: linear-gradient(to top, rgba(0, 212, 255, 0.2), transparent);
             display: flex;
-            justify-content: space-around;
+            flex-direction: column;
             align-items: center;
             padding: 10px;
             border-top: 3px solid #00d4ff;
         }
 
-        .laser-btn {
-            width: 70px;
-            height: 70px;
+        #cannonsRow {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .cannon-btn {
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             border: 3px solid;
             cursor: pointer;
-            transition: all 0.1s;
-            box-shadow: 0 0 20px currentColor;
-            position: relative;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2em;
+            font-size: 1.5em;
             background: rgba(0,0,0,0.8);
+            position: relative;
         }
 
-        .laser-btn:active, .laser-btn.active {
-            transform: scale(0.9);
-            box-shadow: 0 0 40px currentColor;
+        .cannon-btn.selected {
+            transform: scale(1.2);
+            box-shadow: 0 0 30px currentColor, 0 0 50px currentColor;
+            animation: pulse 1s infinite;
         }
 
-        .laser-btn.red { color: #ff4757; border-color: #ff4757; }
-        .laser-btn.blue { color: #3742fa; border-color: #3742fa; }
-        .laser-btn.green { color: #2ed573; border-color: #2ed573; }
-        .laser-btn.yellow { color: #ffa502; border-color: #ffa502; }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 30px currentColor; }
+            50% { box-shadow: 0 0 50px currentColor, 0 0 70px currentColor; }
+        }
+
+        .cannon-btn.red { color: #ff4757; border-color: #ff4757; }
+        .cannon-btn.blue { color: #3742fa; border-color: #3742fa; }
+        .cannon-btn.green { color: #2ed573; border-color: #2ed573; }
+        .cannon-btn.yellow { color: #ffa502; border-color: #ffa502; }
+
+        .cannon-key {
+            position: absolute;
+            bottom: -20px;
+            font-size: 0.7em;
+            color: white;
+            background: rgba(0,0,0,0.8);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        #fireButton {
+            width: 120px;
+            height: 50px;
+            background: linear-gradient(135deg, #ff4757, #ff6348);
+            border: 3px solid #fff;
+            border-radius: 25px;
+            color: white;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 20px #ff4757, 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        #fireButton:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 10px #ff4757;
+        }
+
+        #fireButton.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
         .falling-object {
             position: absolute;
-            width: 60px;
-            height: 60px;
-            font-size: 2.5em;
+            width: 55px;
+            height: 55px;
+            font-size: 2.2em;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -302,10 +381,10 @@
             100% { transform: scale(2) rotate(180deg); opacity: 0; }
         }
 
-        .falling-object.red { left: calc(12.5% - 30px); color: #ff4757; }
-        .falling-object.blue { left: calc(37.5% - 30px); color: #3742fa; }
-        .falling-object.green { left: calc(62.5% - 30px); color: #2ed573; }
-        .falling-object.yellow { left: calc(87.5% - 30px); color: #ffa502; }
+        .falling-object.red { left: calc(12.5% - 27px); color: #ff4757; }
+        .falling-object.blue { left: calc(37.5% - 27px); color: #3742fa; }
+        .falling-object.green { left: calc(62.5% - 27px); color: #2ed573; }
+        .falling-object.yellow { left: calc(87.5% - 27px); color: #ffa502; }
 
         .hit-effect {
             position: absolute;
@@ -331,7 +410,7 @@
             position: absolute;
             width: 6px;
             height: 100vh;
-            bottom: 65px;
+            bottom: 85px;
             opacity: 0.9;
             animation: laserShoot 0.15s ease-out forwards;
             z-index: 8;
@@ -346,7 +425,7 @@
 
         #progressBar {
             position: absolute;
-            top: 70px;
+            top: 110px;
             left: 10%;
             width: 80%;
             height: 8px;
@@ -445,10 +524,12 @@
         }
 
         @media (max-width: 600px) {
-            .laser-btn { width: 60px; height: 60px; font-size: 1.5em; }
-            .falling-object { width: 50px; height: 50px; font-size: 2em; }
+            .cannon-btn { width: 50px; height: 50px; font-size: 1.2em; }
+            #fireButton { width: 100px; height: 45px; font-size: 1.1em; }
+            .falling-object { width: 45px; height: 45px; font-size: 1.8em; }
             #startScreen h1 { font-size: 1.6em; }
             .level-select { grid-template-columns: 1fr; }
+            .controls-info { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -461,20 +542,22 @@
         <div class="developer">Desarrollado por Eliseo Espinoza</div>
         
         <div class="instructions">
-            <h3>🎮 ¡NUEVA MECÁNICA DE DISPARO!</h3>
-            <p>¡Dispara láseres estratégicamente!</p>
+            <h3>🎮 CONTROLES MEJORADOS</h3>
+            <p>¡Selecciona cañón y dispara estratégicamente!</p>
             
-            <div class="strategy-box">
-                <div class="strategy-item shoot-bad">
-                    <span>☄️👾💣</span>
-                    <span>DISPARA = +150 pts (Bonus)</span>
+            <div class="controls-info">
+                <div class="control-box">
+                    <h4>💻 PC / Laptop</h4>
+                    <p><span class="key">←</span><span class="key">↓</span><span class="key">↑</span><span class="key">→</span> o <span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span></p>
+                    <p>Seleccionar cañón</p>
+                    <p style="margin-top:8px;"><span class="key" style="font-size:1.2em;">ESPACIO</span></p>
+                    <p>¡DISPARAR!</p>
                 </div>
-                <div class="strategy-item shoot-good">
-                    <span>🚀🛸⭐</span>
-                    <span>DISPARA = -50 pts (Penalización)</span>
-                </div>
-                <div style="margin-top: 10px; font-size: 0.9em; color: #aaa;">
-                    💡 Estrategia: Deja pasar los buenos, ¡destruye los malos!
+                <div class="control-box">
+                    <h4>📱 Celular / Tablet</h4>
+                    <p>Toca el color para seleccionar</p>
+                    <p style="margin-top:8px;"><span style="color:#ff4757;font-size:1.3em;">🔴 DISPARAR</span></p>
+                    <p>Presiona el botón rojo</p>
                 </div>
             </div>
             
@@ -483,20 +566,16 @@
 
         <div class="level-select">
             <button class="level-btn" onclick="startGame(1)">
-                <span class="level-number">1</span>
-                <span>🌌 Nebulosa</span>
+                <span style="font-size:1.5em;">1</span><br>🌌 Nebulosa
             </button>
             <button class="level-btn" onclick="startGame(2)">
-                <span class="level-number">2</span>
-                <span>🪐 Órbita</span>
+                <span style="font-size:1.5em;">2</span><br>🪐 Órbita
             </button>
             <button class="level-btn" onclick="startGame(3)">
-                <span class="level-number">3</span>
-                <span>⭐ Estelar</span>
+                <span style="font-size:1.5em;">3</span><br>⭐ Estelar
             </button>
             <button class="level-btn" onclick="startGame(4)">
-                <span class="level-number">4</span>
-                <span>🌟 Galáctico</span>
+                <span style="font-size:1.5em;">4</span><br>🌟 Galáctico
             </button>
         </div>
     </div>
@@ -511,17 +590,40 @@
             <div id="combo">Combo: 0</div>
         </div>
 
+        <div id="selectedCannon">
+            <span>Cañón:</span>
+            <div class="cannon-indicator" id="selectedIndicator" style="background:#666;"></div>
+            <span id="selectedText">Ninguno</span>
+        </div>
+
         <div id="progressBar">
             <div id="progressFill"></div>
         </div>
 
         <div id="targetLine"></div>
 
-        <div id="laserZone">
-            <div class="laser-btn red" onclick="shoot('red')">🔴</div>
-            <div class="laser-btn blue" onclick="shoot('blue')">🔵</div>
-            <div class="laser-btn green" onclick="shoot('green')">🟢</div>
-            <div class="laser-btn yellow" onclick="shoot('yellow')">🟡</div>
+        <div id="controlZone">
+            <div id="cannonsRow">
+                <div class="cannon-btn red" data-color="red" onclick="selectCannon('red')">
+                    🔴
+                    <span class="cannon-key">←</span>
+                </div>
+                <div class="cannon-btn blue" data-color="blue" onclick="selectCannon('blue')">
+                    🔵
+                    <span class="cannon-key">↓</span>
+                </div>
+                <div class="cannon-btn green" data-color="green" onclick="selectCannon('green')">
+                    🟢
+                    <span class="cannon-key">↑</span>
+                </div>
+                <div class="cannon-btn yellow" data-color="yellow" onclick="selectCannon('yellow')">
+                    🟡
+                    <span class="cannon-key">→</span>
+                </div>
+            </div>
+            <button id="fireButton" onclick="fire()">
+                💥 DISPARAR
+            </button>
         </div>
     </div>
 
@@ -533,7 +635,7 @@
         <div>
             <button class="game-btn" onclick="location.reload()">🔄 Jugar de Nuevo</button>
         </div>
-        <div class="developer" style="margin-top: 20px;">Desarrollado por Eliseo Espinoza</div>
+        <div class="developer" style="margin-top:20px;">Desarrollado por Eliseo Espinoza</div>
     </div>
 
     <script>
@@ -570,6 +672,7 @@
             speed: 0,
             spawnRate: 0,
             badChance: 0.35,
+            selectedCannon: null,
             shotsFired: 0,
             badDestroyed: 0,
             goodDestroyed: 0,
@@ -615,6 +718,9 @@
 
             await initAudio(levelNum);
             
+            // Seleccionar primer cañón por defecto
+            selectCannon('red');
+            
             setTimeout(() => {
                 gameState.isPlaying = true;
                 gameLoopID = requestAnimationFrame(gameLoop);
@@ -653,6 +759,88 @@
             }
         }
 
+        function selectCannon(color) {
+            if (!gameState.isPlaying && gameState.level === 1) return; // Permitir selección antes de empezar solo en nivel 1
+            
+            gameState.selectedCannon = color;
+            
+            // Actualizar UI
+            document.querySelectorAll('.cannon-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.querySelector(`.cannon-btn.${color}`).classList.add('selected');
+            
+            // Actualizar indicador
+            const colors = {
+                red: '#ff4757',
+                blue: '#3742fa',
+                green: '#2ed573',
+                yellow: '#ffa502'
+            };
+            document.getElementById('selectedIndicator').style.background = colors[color];
+            document.getElementById('selectedText').textContent = color.toUpperCase();
+        }
+
+        function fire() {
+            if (!gameState.isPlaying || !gameState.selectedCannon) return;
+            
+            if (audio && audio.paused) audio.play().catch(() => {});
+            
+            const color = gameState.selectedCannon;
+            
+            // Animación del botón
+            const btn = document.getElementById('fireButton');
+            btn.style.transform = 'scale(0.9)';
+            setTimeout(() => btn.style.transform = 'scale(1)', 100);
+            
+            // Crear láser
+            createLaser(color);
+            gameState.shotsFired++;
+            
+            // Buscar objetivo en esa columna
+            const targets = gameState.objects.filter(obj => 
+                obj.color === color && !obj.destroyed
+            );
+            
+            if (targets.length > 0) {
+                // Disparar al más cercano (menor Y)
+                const target = targets.reduce((prev, curr) => 
+                    prev.y < curr.y ? prev : curr
+                );
+                
+                target.destroyed = true;
+                
+                if (target.isBad) {
+                    handleBadDestroyed(target);
+                } else {
+                    handleGoodDestroyed(target);
+                }
+            }
+            
+            updateUI();
+        }
+
+        function createLaser(color) {
+            const laser = document.createElement('div');
+            laser.className = 'laser-beam';
+            
+            const colors = {
+                red: '#ff4757',
+                blue: '#3742fa',
+                green: '#2ed573',
+                yellow: '#ffa502'
+            };
+            
+            laser.style.background = colors[color];
+            laser.style.boxShadow = `0 0 30px ${colors[color]}`;
+            
+            const positions = { red: '12.5%', blue: '37.5%', green: '62.5%', yellow: '87.5%' };
+            laser.style.left = `calc(${positions[color]} - 3px)`;
+            
+            document.getElementById('gameArea').appendChild(laser);
+            setTimeout(() => laser.remove(), 150);
+        }
+
         function spawnObject() {
             if (!gameState.isPlaying) return;
             
@@ -685,7 +873,7 @@
         function gameLoop() {
             if (!gameState.isPlaying) return;
             
-            const targetLine = window.innerHeight - 140;
+            const targetLine = window.innerHeight - 180;
             const missLine = window.innerHeight;
             
             gameState.objects.forEach((obj, index) => {
@@ -698,7 +886,7 @@
                     if (obj.isBad) {
                         gameState.lives--;
                         gameState.badPassed++;
-                        showFeedback(obj.element.offsetLeft + 30, targetLine, 'points-bad', '¡Te golpearon! 💥');
+                        showFeedback(obj.element.offsetLeft + 27, targetLine, 'points-bad', '¡Te golpearon! 💥');
                         updateLives();
                         
                         if (gameState.lives <= 0) {
@@ -719,64 +907,6 @@
             gameLoopID = requestAnimationFrame(gameLoop);
         }
 
-        function shoot(color) {
-            if (!gameState.isPlaying) return;
-            
-            if (audio && audio.paused) audio.play().catch(() => {});
-            
-            const btn = document.querySelector(`.laser-btn.${color}`);
-            btn.classList.add('active');
-            setTimeout(() => btn.classList.remove('active'), 100);
-            
-            createLaser(color);
-            gameState.shotsFired++;
-            
-            // Buscar el objeto más alto (más cercano al láser) del color correcto
-            const targets = gameState.objects.filter(obj => 
-                obj.color === color && !obj.destroyed
-            );
-            
-            if (targets.length > 0) {
-                // Disparar al que está más arriba (menor valor Y)
-                const target = targets.reduce((prev, curr) => 
-                    prev.y < curr.y ? prev : curr
-                );
-                
-                target.destroyed = true;
-                
-                if (target.isBad) {
-                    // ¡BIEN! Destruiste un malo
-                    handleBadDestroyed(target);
-                } else {
-                    // ¡UPS! Destruiste un bueno
-                    handleGoodDestroyed(target);
-                }
-            }
-            
-            updateUI();
-        }
-
-        function createLaser(color) {
-            const laser = document.createElement('div');
-            laser.className = 'laser-beam';
-            
-            const colors = {
-                red: '#ff4757',
-                blue: '#3742fa',
-                green: '#2ed573',
-                yellow: '#ffa502'
-            };
-            
-            laser.style.background = colors[color];
-            laser.style.boxShadow = `0 0 30px ${colors[color]}`;
-            
-            const positions = { red: '12.5%', blue: '37.5%', green: '62.5%', yellow: '87.5%' };
-            laser.style.left = `calc(${positions[color]} - 3px)`;
-            
-            document.getElementById('gameArea').appendChild(laser);
-            setTimeout(() => laser.remove(), 150);
-        }
-
         function handleBadDestroyed(target) {
             const points = 150;
             gameState.score += points;
@@ -786,8 +916,8 @@
             
             target.element.classList.add('hit');
             showFeedback(
-                target.element.offsetLeft + 30, 
-                target.y + 30, 
+                target.element.offsetLeft + 27, 
+                target.y + 27, 
                 'points-bonus', 
                 `+${points} ¡EXCELENTE!`
             );
@@ -806,8 +936,8 @@
             
             target.element.classList.add('hit');
             showFeedback(
-                target.element.offsetLeft + 30, 
-                target.y + 30, 
+                target.element.offsetLeft + 27, 
+                target.y + 27, 
                 'points-bad', 
                 `-${penalty} ¡CUIDADO!`
             );
@@ -887,24 +1017,37 @@
                 <p><strong>Nivel:</strong> ${levels[gameState.level].name}</p>
                 <p><strong style="color:#2ed573">Malos destruidos:</strong> ${gameState.badDestroyed}</p>
                 <p><strong style="color:#ff4757">Buenos destruidos:</strong> ${gameState.goodDestroyed}</p>
-                <p><strong>Malos que pasaron:</strong> ${gameState.badPassed} (te quitaron vidas)</p>
                 <p><strong>Disparos:</strong> ${gameState.shotsFired}</p>
                 <p><strong>Combo máximo:</strong> ${gameState.maxCombo}</p>
-                <p><strong>Precisión defensiva:</strong> ${(accuracy * 100).toFixed(1)}%</p>
+                <p><strong>Precisión:</strong> ${(accuracy * 100).toFixed(1)}%</p>
             `;
             
             document.getElementById('endScreen').style.display = 'flex';
         }
 
+        // Controles de teclado mejorados
         document.addEventListener('keydown', (e) => {
-            const keyMap = {
-                'ArrowLeft': 'red', 'a': 'red',
-                'ArrowDown': 'blue', 's': 'blue',
-                'ArrowUp': 'green', 'w': 'green',
-                'ArrowRight': 'yellow', 'd': 'yellow'
+            // Prevenir scroll con espacio
+            if (e.code === 'Space') {
+                e.preventDefault();
+            }
+            
+            // Seleccionar cañón con flechas o WASD
+            const selectMap = {
+                'ArrowLeft': 'red', 'KeyA': 'red',
+                'ArrowDown': 'blue', 'KeyS': 'blue',
+                'ArrowUp': 'green', 'KeyW': 'green',
+                'ArrowRight': 'yellow', 'KeyD': 'yellow'
             };
             
-            if (keyMap[e.key]) shoot(keyMap[e.key]);
+            if (selectMap[e.code]) {
+                selectCannon(selectMap[e.code]);
+            }
+            
+            // Disparar con espacio
+            if (e.code === 'Space') {
+                fire();
+            }
         });
 
         createStarfield();
