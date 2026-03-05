@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🚀 CADETES DE 5to GRADO - Desarrollado por Eliseo Espinoza</title>
+    <title>👾 CADETES SPACE INVADERS - Desarrollado por Eliseo Espinoza</title>
     <style>
         * {
             margin: 0;
@@ -15,159 +15,121 @@
         }
 
         body {
-            font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
-            background: #0a0a1a;
+            font-family: 'Courier New', monospace;
+            background: #000;
             overflow: hidden;
             height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        .stars-bg {
-            position: fixed;
+        /* CRT Effect */
+        .crt::before {
+            content: " ";
+            display: block;
+            position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
             pointer-events: none;
-            z-index: 0;
         }
 
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle 2s infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-
+        /* Pantalla de inicio */
         #startScreen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #1a1a3e 0%, #0f0f23 100%);
+            background: #000;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            transition: opacity 0.5s;
-            border: 3px solid #00d4ff;
-            box-shadow: inset 0 0 50px rgba(0, 212, 255, 0.3);
-            padding: 10px;
+            border: 4px solid #0f0;
         }
 
         #startScreen h1 {
             font-size: 1.8em;
-            color: #00d4ff;
-            text-shadow: 0 0 20px #00d4ff;
-            margin-bottom: 5px;
-            animation: neonPulse 2s infinite;
+            color: #0f0;
             text-align: center;
-            line-height: 1.2;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #0f0;
+            animation: blink 1s infinite;
         }
 
-        @keyframes neonPulse {
-            0%, 100% { text-shadow: 0 0 20px #00d4ff; }
-            50% { text-shadow: 0 0 10px #00d4ff; }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
         }
 
         .developer {
-            color: #ff00ff;
-            font-size: 1em;
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px #ff00ff;
-            background: rgba(0,0,0,0.5);
-            padding: 5px 15px;
-            border-radius: 15px;
-            border: 2px solid #ff00ff;
+            color: #f0f;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+
+        .instructions {
+            color: #0f0;
+            text-align: center;
+            margin: 15px;
+            font-size: 0.85em;
+            max-width: 450px;
+            border: 2px solid #0f0;
+            padding: 15px;
+            background: rgba(0,255,0,0.1);
+        }
+
+        .controls-info {
+            margin-top: 10px;
+            color: #fff;
+        }
+
+        .key {
+            background: #333;
+            padding: 3px 8px;
+            border: 1px solid #666;
+            color: #0f0;
         }
 
         .level-select {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin: 10px;
-            max-width: 400px;
+            margin: 15px;
+            max-width: 350px;
         }
 
         .level-btn {
-            background: linear-gradient(135deg, #2d1b69 0%, #1a1a3e 100%);
-            border: 3px solid #00d4ff;
-            padding: 15px;
-            font-size: 1em;
-            border-radius: 10px;
+            background: #000;
+            border: 2px solid #0f0;
+            padding: 12px;
+            font-size: 0.9em;
+            color: #0f0;
             cursor: pointer;
-            color: white;
-            font-weight: bold;
-            transition: all 0.3s;
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+            font-family: 'Courier New', monospace;
         }
 
         .level-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+            background: #0f0;
+            color: #000;
         }
 
-        .instructions {
-            color: #fff;
-            text-align: center;
-            margin: 10px;
-            font-size: 0.9em;
-            max-width: 500px;
-            line-height: 1.4;
-            background: rgba(0,0,0,0.5);
-            padding: 15px;
-            border-radius: 10px;
-            border: 2px solid #ff00ff;
-        }
-
-        .instructions h3 {
-            color: #00d4ff;
-            margin-bottom: 8px;
-            font-size: 1.1em;
-        }
-
-        .controls-simple {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 10px;
-            font-size: 0.85em;
-        }
-
-        .control-item {
-            text-align: center;
-        }
-
-        .key {
-            display: inline-block;
-            background: #333;
-            padding: 3px 8px;
-            border-radius: 5px;
-            border: 1px solid #666;
-            margin: 2px;
-        }
-
-        .audio-hint {
-            color: #ffa502;
-            font-size: 0.8em;
-            margin-top: 8px;
-        }
-
+        /* Área de juego */
         #gameArea {
             flex: 1;
             position: relative;
             overflow: hidden;
             display: none;
+            background: #000;
         }
 
+        /* UI */
         #topUI {
             position: absolute;
             top: 5px;
@@ -175,720 +137,579 @@
             right: 5px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            color: white;
+            color: #0f0;
             font-size: 1em;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
             z-index: 50;
-            background: rgba(0,0,0,0.6);
-            padding: 8px;
-            border-radius: 8px;
-            border: 2px solid #00d4ff;
-        }
-
-        #lives {
-            color: #ff4757;
-            font-size: 1.2em;
-        }
-
-        #combo {
-            color: #ffa502;
-            font-size: 1.2em;
-        }
-
-        #score {
-            color: #2ed573;
-            font-size: 1.2em;
-        }
-
-        #targetLine {
-            position: absolute;
-            bottom: 80px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, #00d4ff, transparent);
-            box-shadow: 0 0 15px #00d4ff;
-            z-index: 10;
-        }
-
-        #targetLine::before {
-            content: '⚡ DEFENSA ⚡';
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #00d4ff;
-            font-weight: bold;
-            font-size: 0.9em;
-            text-shadow: 0 0 10px #00d4ff;
-            white-space: nowrap;
-        }
-
-        #laserZone {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 75px;
-            background: linear-gradient(to top, rgba(0, 212, 255, 0.2), transparent);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
+            background: #000;
             padding: 5px;
-            border-top: 2px solid #00d4ff;
+            border-bottom: 2px solid #0f0;
         }
 
-        .laser-btn {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            border: 3px solid;
-            cursor: pointer;
-            transition: all 0.1s;
-            box-shadow: 0 0 15px currentColor;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5em;
-            background: rgba(0,0,0,0.8);
-        }
+        #lives { color: #f00; }
+        #score { color: #0f0; }
 
-        .laser-btn:active {
-            transform: scale(0.9);
-        }
-
-        .laser-btn.red { color: #ff4757; border-color: #ff4757; }
-        .laser-btn.blue { color: #3742fa; border-color: #3742fa; }
-        .laser-btn.green { color: #2ed573; border-color: #2ed573; }
-        .laser-btn.yellow { color: #ffa502; border-color: #ffa502; }
-
-        .falling-object {
+        /* Nave del jugador */
+        #player {
             position: absolute;
-            width: 45px;
-            height: 45px;
-            font-size: 1.8em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            bottom: 60px;
+            width: 40px;
+            height: 30px;
+            font-size: 2em;
+            z-index: 10;
+            text-align: center;
+            transition: left 0.1s;
+        }
+
+        /* Disparos */
+        .shot {
+            position: absolute;
+            width: 4px;
+            height: 15px;
+            background: #0f0;
+            box-shadow: 0 0 8px #0f0;
+            z-index: 9;
+        }
+
+        .enemy-shot {
+            position: absolute;
+            width: 4px;
+            height: 10px;
+            background: #f00;
+            box-shadow: 0 0 5px #f00;
+            z-index: 9;
+        }
+
+        /* Enemigos */
+        .enemy {
+            position: absolute;
+            width: 35px;
+            height: 35px;
+            font-size: 1.6em;
+            text-align: center;
             z-index: 5;
-            filter: drop-shadow(0 0 8px currentColor);
-            animation: rotate 3s linear infinite;
+            transition: transform 0.1s;
         }
 
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        .enemy.bad { filter: drop-shadow(0 0 5px #f00); }
+        .enemy.good { filter: drop-shadow(0 0 5px #0f0); }
 
-        .falling-object.red { left: calc(12.5% - 22px); color: #ff4757; }
-        .falling-object.blue { left: calc(37.5% - 22px); color: #3742fa; }
-        .falling-object.green { left: calc(62.5% - 22px); color: #2ed573; }
-        .falling-object.yellow { left: calc(87.5% - 22px); color: #ffa502; }
-
-        .hit-effect {
+        /* Explosión */
+        .explosion {
             position: absolute;
+            font-size: 2em;
+            animation: explode 0.4s ease-out forwards;
+            z-index: 15;
             pointer-events: none;
+        }
+
+        @keyframes explode {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        /* Puntos */
+        .points {
+            position: absolute;
             font-weight: bold;
-            font-size: 1.3em;
-            animation: floatUp 0.8s ease-out forwards;
+            font-size: 1em;
+            animation: floatUp 0.6s ease-out forwards;
             z-index: 20;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            pointer-events: none;
         }
 
         @keyframes floatUp {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-60px) scale(1.2); opacity: 0; }
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-30px); opacity: 0; }
         }
 
-        .points-good { color: #2ed573; }
-        .points-bad { color: #ff4757; }
-        .points-bonus { color: #FFD700; }
+        .points-good { color: #0f0; }
+        .points-bad { color: #f00; }
 
-        .laser-beam {
+        /* Controles móviles */
+        #mobileControls {
             position: absolute;
-            width: 4px;
-            height: 100vh;
-            bottom: 37px;
-            opacity: 0.8;
-            animation: laserShoot 0.15s ease-out forwards;
-            z-index: 8;
-            box-shadow: 0 0 20px currentColor;
+            bottom: 0;
+            width: 100%;
+            height: 55px;
+            background: #111;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 15px;
+            border-top: 2px solid #0f0;
+            z-index: 100;
         }
 
-        @keyframes laserShoot {
-            0% { height: 0; opacity: 1; }
-            100% { height: 100vh; opacity: 0; }
+        .move-btn {
+            width: 50px;
+            height: 45px;
+            background: #000;
+            border: 2px solid #0f0;
+            color: #0f0;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
 
-        #progressBar {
-            position: absolute;
-            top: 50px;
-            left: 10%;
-            width: 80%;
-            height: 6px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 3px;
-            overflow: hidden;
-            border: 1px solid #00d4ff;
+        .move-btn:active {
+            background: #0f0;
+            color: #000;
         }
 
-        #progressFill {
-            height: 100%;
-            background: linear-gradient(90deg, #00d4ff, #ff00ff);
-            width: 0%;
-            transition: width 0.1s linear;
+        #fireBtn {
+            width: 100px;
+            height: 45px;
+            background: #f00;
+            border: 2px solid #fff;
+            color: #fff;
+            font-size: 0.9em;
+            font-weight: bold;
+            cursor: pointer;
         }
 
+        #fireBtn:active {
+            background: #900;
+        }
+
+        /* Pantalla final */
         #endScreen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(10, 10, 26, 0.95);
+            background: #000;
             display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            color: white;
-            border: 3px solid #00d4ff;
-            padding: 20px;
+            border: 4px solid #0f0;
         }
 
         #endScreen h2 {
-            color: #00d4ff;
-            font-size: 2em;
-            text-shadow: 0 0 20px #00d4ff;
+            color: #0f0;
+            font-size: 1.8em;
             margin-bottom: 15px;
-            text-align: center;
+            animation: blink 1s infinite;
         }
 
         #finalScore {
-            font-size: 3em;
-            margin: 15px;
-            color: #2ed573;
-            text-shadow: 0 0 20px #2ed573;
-        }
-
-        .stars {
             font-size: 2.5em;
+            color: #0f0;
             margin: 15px;
-        }
-
-        #stats {
-            background: rgba(0,0,0,0.5);
-            padding: 15px;
-            border-radius: 10px;
-            border: 2px solid #ff00ff;
-            margin: 15px;
-            text-align: center;
-            font-size: 0.9em;
         }
 
         .game-btn {
-            background: linear-gradient(135deg, #00d4ff, #0099cc);
-            color: white;
-            border: none;
+            background: #000;
+            color: #0f0;
+            border: 2px solid #0f0;
             padding: 12px 25px;
-            font-size: 1.1em;
-            border-radius: 50px;
+            font-size: 1em;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
             margin: 10px;
+            font-family: 'Courier New', monospace;
         }
 
-        #levelIndicator {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2.5em;
-            color: #00d4ff;
-            text-shadow: 0 0 30px #00d4ff;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 100;
-            text-align: center;
+        .game-btn:hover {
+            background: #0f0;
+            color: #000;
         }
 
-        .show-level {
-            animation: showLevel 2s ease-out forwards;
+        /* Responsive */
+        @media (min-width: 768px) {
+            #mobileControls { display: none; }
+            #player { bottom: 10px; }
         }
 
-        @keyframes showLevel {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
-            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
-        }
-
-        @media (max-width: 600px) {
-            #startScreen h1 { font-size: 1.5em; }
-            .level-btn { padding: 12px; font-size: 0.9em; }
-            .laser-btn { width: 50px; height: 50px; font-size: 1.3em; }
-            .falling-object { width: 40px; height: 40px; font-size: 1.5em; }
-            #topUI { font-size: 0.9em; padding: 5px; }
-            #laserZone { height: 70px; }
-            #targetLine { bottom: 75px; }
-            #targetLine::before { font-size: 0.8em; }
+        @media (max-width: 767px) {
+            #startScreen h1 { font-size: 1.4em; }
+            .enemy { width: 30px; height: 30px; font-size: 1.4em; }
+            #player { width: 35px; height: 25px; font-size: 1.7em; }
         }
     </style>
 </head>
-<body>
-
-    <div class="stars-bg" id="starsBg"></div>
+<body class="crt">
 
     <div id="startScreen">
-        <h1>🚀 CADETES DE<br>5to GRADO</h1>
+        <h1>👾 CADETES<br>SPACE INVADERS 👾</h1>
         <div class="developer">Desarrollado por Eliseo Espinoza</div>
         
         <div class="instructions">
-            <h3>🎮 CONTROLES SIMPLES</h3>
-            
-            <div class="controls-simple">
-                <div class="control-item">
-                    <strong>PC:</strong><br>
-                    <span class="key">←↓↑→</span> o <span class="key">WASD</span><br>
-                    <span class="key">ESPACIO</span> = Disparar
-                </div>
-                <div class="control-item">
-                    <strong>Celular:</strong><br>
-                    Toca el color<br>
-                    = Disparar
-                </div>
+            <div style="color:#fff; margin-bottom:10px;">
+                DESTRUYE LOS MALOS • EVITA LOS BUENOS
             </div>
             
-            <div style="margin-top: 10px; font-size: 0.85em;">
-                💡 <strong>Tip:</strong> Destruye ☄️👾💣 (+150 pts)<br>
-                Evita destruir 🚀🛸⭐ (-50 pts)
+            <div class="controls-info">
+                <strong>PC:</strong> <span class="key">←</span> <span class="key">→</span> Mover • <span class="key">ESPACIO</span> Disparar<br>
+                <strong>Celular:</strong> Botones ← → y 🔴
             </div>
             
-            <div class="audio-hint">🔊 El audio se activará al iniciar</div>
+            <div style="margin-top:10px; font-size:0.8em;">
+                👾☄️💣 = +100 pts | 🚀⭐✨ = -50 pts
+            </div>
         </div>
 
         <div class="level-select">
             <button class="level-btn" onclick="startGame(1)">
-                <strong style="font-size:1.3em;">1</strong><br>🌌 Nebulosa
+                NIVEL 1<br>FÁCIL
             </button>
             <button class="level-btn" onclick="startGame(2)">
-                <strong style="font-size:1.3em;">2</strong><br>🪐 Órbita
+                NIVEL 2<br>NORMAL
             </button>
             <button class="level-btn" onclick="startGame(3)">
-                <strong style="font-size:1.3em;">3</strong><br>⭐ Estelar
+                NIVEL 3<br>DIFÍCIL
             </button>
             <button class="level-btn" onclick="startGame(4)">
-                <strong style="font-size:1.3em;">4</strong><br>🌟 Galáctico
+                NIVEL 4<br>EXTREMO
             </button>
         </div>
     </div>
 
     <div id="gameArea">
-        <div id="levelIndicator"></div>
-        
         <div id="topUI">
-            <div id="lives">❤️❤️❤️</div>
-            <div id="score">0</div>
-            <div id="combo">Combo: 0</div>
+            <div id="lives">VIDAS: ❤️❤️❤️</div>
+            <div id="score">PUNTOS: 0</div>
+            <div id="level">NIVEL 1</div>
         </div>
 
-        <div id="progressBar">
-            <div id="progressFill"></div>
-        </div>
+        <div id="player">🛸</div>
 
-        <div id="targetLine"></div>
-
-        <div id="laserZone">
-            <div class="laser-btn red" data-color="red" onclick="shoot('red')">🔴</div>
-            <div class="laser-btn blue" data-color="blue" onclick="shoot('blue')">🔵</div>
-            <div class="laser-btn green" data-color="green" onclick="shoot('green')">🟢</div>
-            <div class="laser-btn yellow" data-color="yellow" onclick="shoot('yellow')">🟡</div>
+        <div id="mobileControls">
+            <div class="move-btn" id="leftBtn">←</div>
+            <button id="fireBtn">🔥 FUEGO</button>
+            <div class="move-btn" id="rightBtn">→</div>
         </div>
     </div>
 
     <div id="endScreen">
-        <h2 id="endTitle">¡MISIÓN CUMPLIDA!</h2>
+        <h2 id="endTitle">GAME OVER</h2>
         <div id="finalScore">0</div>
-        <div class="stars" id="stars"></div>
-        <div id="stats"></div>
-        <button class="game-btn" onclick="location.reload()">🔄 Jugar de Nuevo</button>
+        <div id="stats" style="color:#0f0; margin:10px; text-align:center; font-size:0.9em;"></div>
+        <button class="game-btn" onclick="location.reload()">JUGAR DE NUEVO</button>
         <div class="developer" style="margin-top:15px;">Desarrollado por Eliseo Espinoza</div>
     </div>
 
     <script>
+        // Configuración de niveles
         const levels = {
-            1: { name: "Nebulosa", speed: 2.5, spawnRate: 900, badChance: 0.35, duration: 45000 },
-            2: { name: "Órbita", speed: 3.5, spawnRate: 750, badChance: 0.4, duration: 50000 },
-            3: { name: "Estelar", speed: 4.5, spawnRate: 600, badChance: 0.45, duration: 55000 },
-            4: { name: "Galáctico", speed: 5.5, spawnRate: 450, badChance: 0.5, duration: 60000 }
+            1: { rows: 3, cols: 6, speed: 0.3, dropSpeed: 20, shootChance: 0.001 },
+            2: { rows: 4, cols: 7, speed: 0.5, dropSpeed: 15, shootChance: 0.002 },
+            3: { rows: 4, cols: 8, speed: 0.7, dropSpeed: 12, shootChance: 0.003 },
+            4: { rows: 5, cols: 8, speed: 1, dropSpeed: 10, shootChance: 0.005 }
         };
 
-        const emojis = {
-            good: {
-                red: ['🚀', '🛸', '⭐', '🪐'],
-                blue: ['🚀', '🛰️', '✨', '🌎'],
-                green: ['🚀', '👽', '🌟', '🌍'],
-                yellow: ['🚀', '🤖', '💫', '🌏']
-            },
-            bad: {
-                red: ['☄️', '💣', '🔥'],
-                blue: ['👾', '🌑', '⚡'],
-                green: ['🦠', '⚫', '☠️'],
-                yellow: ['🔥', '⚡', '💀']
-            }
-        };
+        const badEmojis = ['👾', '👽', '☄️', '💣', '🦠'];
+        const goodEmojis = ['🚀', '⭐', '🛸', '✨', '🌟'];
 
         let gameState = {
             score: 0,
-            combo: 0,
-            maxCombo: 0,
             lives: 3,
-            objects: [],
-            isPlaying: false,
             level: 1,
-            speed: 0,
-            spawnRate: 0,
-            badChance: 0.35,
-            shotsFired: 0,
-            badDestroyed: 0,
-            goodDestroyed: 0,
-            badPassed: 0
+            isPlaying: false,
+            playerX: 50,
+            enemies: [],
+            shots: [],
+            enemyShots: [],
+            direction: 1,
+            dropTimer: 0,
+            speed: 0.3,
+            shootChance: 0.001
         };
 
-        let audio = null;
-        let gameLoopID;
-        let spawnID;
-        let progressInterval;
-        let selectedCannon = 'red';
+        let audio;
+        let gameLoopId;
+        let moveLeft = false;
+        let moveRight = false;
 
-        function createStarfield() {
-            const container = document.getElementById('starsBg');
-            for (let i = 0; i < 80; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.width = Math.random() * 2 + 1 + 'px';
-                star.style.height = star.style.width;
-                star.style.animationDelay = Math.random() * 2 + 's';
-                container.appendChild(star);
-            }
-        }
-
-        async function startGame(levelNum) {
+        function startGame(levelNum) {
             const config = levels[levelNum];
             gameState.level = levelNum;
             gameState.speed = config.speed;
-            gameState.spawnRate = config.spawnRate;
-            gameState.badChance = config.badChance;
+            gameState.shootChance = config.shootChance;
             
-            const indicator = document.getElementById('levelIndicator');
-            indicator.innerHTML = `NIVEL ${levelNum}<br><small>${config.name}</small>`;
-            indicator.classList.add('show-level');
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameArea').style.display = 'block';
+            document.getElementById('level').textContent = `NIVEL ${levelNum}`;
             
-            document.getElementById('startScreen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('startScreen').style.display = 'none';
-                document.getElementById('gameArea').style.display = 'block';
-            }, 500);
-
-            await initAudio(levelNum);
+            initAudio();
+            createEnemies(config.rows, config.cols);
+            setupControls();
             
-            setTimeout(() => {
-                gameState.isPlaying = true;
-                gameLoopID = requestAnimationFrame(gameLoop);
-                spawnID = setInterval(spawnObject, config.spawnRate);
-                startProgressTimer(config.duration);
-            }, 2000);
+            gameState.isPlaying = true;
+            gameLoopId = requestAnimationFrame(gameLoop);
         }
 
-        async function initAudio(levelNum) {
-            try {
-                const audioFiles = {
-                    1: "Neon Rhythm Strike.mp3",
-                    2: "Neon Rhythm Strike (1).mp3", 
-                    3: "Neon Rhythm Strike (2).mp3",
-                    4: "Neon Rhythm Strike (3).mp3"
-                };
-                
-                audio = new Audio(audioFiles[levelNum]);
-                audio.loop = true;
-                audio.volume = 0.7;
-                
-                await new Promise((resolve) => {
-                    audio.addEventListener('canplaythrough', resolve, { once: true });
-                    setTimeout(resolve, 1000);
-                });
-                
-                const playPromise = audio.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(() => console.log('Esperando interacción'));
+        function initAudio() {
+            const files = {
+                1: "Neon Rhythm Strike.mp3",
+                2: "Neon Rhythm Strike (1).mp3",
+                3: "Neon Rhythm Strike (2).mp3",
+                4: "Neon Rhythm Strike (3).mp3"
+            };
+            audio = new Audio(files[gameState.level]);
+            audio.loop = true;
+            audio.volume = 0.5;
+            audio.play().catch(() => {});
+        }
+
+        function createEnemies(rows, cols) {
+            const gameArea = document.getElementById('gameArea');
+            const width = gameArea.clientWidth;
+            const startX = (width - (cols * 45)) / 2;
+            
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const isBad = Math.random() > 0.2; // 80% malos, 20% buenos
+                    const emoji = isBad ? 
+                        badEmojis[Math.floor(Math.random() * badEmojis.length)] :
+                        goodEmojis[Math.floor(Math.random() * goodEmojis.length)];
+                    
+                    const enemy = document.createElement('div');
+                    enemy.className = `enemy ${isBad ? 'bad' : 'good'}`;
+                    enemy.textContent = emoji;
+                    enemy.style.left = (startX + col * 45) + 'px';
+                    enemy.style.top = (50 + row * 45) + 'px';
+                    enemy.dataset.isBad = isBad;
+                    
+                    gameArea.appendChild(enemy);
+                    
+                    gameState.enemies.push({
+                        element: enemy,
+                        x: startX + col * 45,
+                        y: 50 + row * 45,
+                        isBad: isBad,
+                        row: row,
+                        col: col
+                    });
                 }
-            } catch (e) {
-                console.error('Audio error:', e);
             }
-        }
-
-        function spawnObject() {
-            if (!gameState.isPlaying) return;
-            
-            const colors = ['red', 'blue', 'green', 'yellow'];
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            const isBad = Math.random() < gameState.badChance;
-            
-            const obj = document.createElement('div');
-            obj.className = `falling-object ${color}`;
-            obj.style.top = '-60px';
-            obj.dataset.color = color;
-            obj.dataset.isBad = isBad;
-            
-            const emojiList = isBad ? emojis.bad[color] : emojis.good[color];
-            const emoji = emojiList[Math.floor(Math.random() * emojiList.length)];
-            obj.textContent = emoji;
-            
-            document.getElementById('gameArea').appendChild(obj);
-            
-            gameState.objects.push({
-                element: obj,
-                y: -60,
-                color: color,
-                isBad: isBad,
-                destroyed: false
-            });
         }
 
         function gameLoop() {
             if (!gameState.isPlaying) return;
             
-            const targetLine = window.innerHeight - 80;
-            const missLine = window.innerHeight;
+            // Mover jugador
+            if (moveLeft) gameState.playerX -= 1.5;
+            if (moveRight) gameState.playerX += 1.5;
+            gameState.playerX = Math.max(5, Math.min(95, gameState.playerX));
+            document.getElementById('player').style.left = gameState.playerX + '%';
             
-            gameState.objects.forEach((obj, index) => {
-                if (obj.destroyed) return;
-                
-                obj.y += gameState.speed;
-                obj.element.style.top = obj.y + 'px';
-                
-                if (obj.y > missLine) {
-                    if (obj.isBad) {
-                        gameState.lives--;
-                        gameState.badPassed++;
-                        showFeedback(obj.element.offsetLeft + 22, targetLine, 'points-bad', '¡Te golpearon!');
-                        updateLives();
-                        
-                        if (gameState.lives <= 0) {
-                            endGame(false);
-                            return;
-                        }
-                    }
-                    
-                    obj.element.remove();
-                    gameState.objects.splice(index, 1);
-                    updateUI();
+            // Mover formación de enemigos
+            let hitEdge = false;
+            gameState.enemies.forEach(enemy => {
+                enemy.x += gameState.speed * gameState.direction;
+                if (enemy.x <= 10 || enemy.x >= window.innerWidth - 50) {
+                    hitEdge = true;
                 }
             });
             
-            gameLoopID = requestAnimationFrame(gameLoop);
-        }
-
-        function shoot(color) {
-            if (!gameState.isPlaying) return;
-            
-            if (audio && audio.paused) audio.play().catch(() => {});
-            
-            // Animación del botón
-            const btn = document.querySelector(`.laser-btn.${color}`);
-            btn.style.transform = 'scale(0.9)';
-            setTimeout(() => btn.style.transform = 'scale(1)', 100);
-            
-            createLaser(color);
-            gameState.shotsFired++;
-            
-            // Buscar objetivo
-            const targets = gameState.objects.filter(obj => 
-                obj.color === color && !obj.destroyed
-            );
-            
-            if (targets.length > 0) {
-                const target = targets.reduce((prev, curr) => 
-                    prev.y < curr.y ? prev : curr
-                );
-                
-                target.destroyed = true;
-                
-                if (target.isBad) {
-                    handleBadDestroyed(target);
-                } else {
-                    handleGoodDestroyed(target);
-                }
+            // Si tocan borde, bajar y cambiar dirección
+            if (hitEdge) {
+                gameState.direction *= -1;
+                gameState.enemies.forEach(enemy => {
+                    enemy.y += 20;
+                    enemy.element.style.top = enemy.y + 'px';
+                });
             }
             
+            // Actualizar posición enemigos
+            gameState.enemies.forEach(enemy => {
+                enemy.element.style.left = enemy.x + 'px';
+                
+                // Verificar si llegaron abajo
+                if (enemy.y > window.innerHeight - 100) {
+                    endGame(false);
+                    return;
+                }
+            });
+            
+            // Enemigos disparan
+            if (Math.random() < gameState.shootChance && gameState.enemies.length > 0) {
+                const shooter = gameState.enemies[Math.floor(Math.random() * gameState.enemies.length)];
+                createEnemyShot(shooter.x + 15, shooter.y + 30);
+            }
+            
+            // Mover disparos del jugador
+            gameState.shots.forEach((shot, index) => {
+                shot.y -= 8;
+                shot.element.style.top = shot.y + 'px';
+                
+                // Colisión con enemigos
+                gameState.enemies.forEach((enemy, eIndex) => {
+                    if (isColliding(shot.element, enemy.element)) {
+                        // Impacto!
+                        if (enemy.isBad) {
+                            gameState.score += 100;
+                            showPoints(enemy.x, enemy.y, '+100', 'good');
+                        } else {
+                            gameState.score = Math.max(0, gameState.score - 50);
+                            showPoints(enemy.x, enemy.y, '-50', 'bad');
+                        }
+                        
+                        createExplosion(enemy.x, enemy.y);
+                        enemy.element.remove();
+                        gameState.enemies.splice(eIndex, 1);
+                        shot.element.remove();
+                        gameState.shots.splice(index, 1);
+                        updateUI();
+                        
+                        // Victoria si destruye todos los malos
+                        const badsLeft = gameState.enemies.filter(e => e.isBad).length;
+                        if (badsLeft === 0) {
+                            endGame(true);
+                        }
+                    }
+                });
+                
+                if (shot.y < 0) {
+                    shot.element.remove();
+                    gameState.shots.splice(index, 1);
+                }
+            });
+            
+            // Mover disparos enemigos
+            gameState.enemyShots.forEach((shot, index) => {
+                shot.y += 5;
+                shot.element.style.top = shot.y + 'px';
+                
+                // Colisión con jugador
+                const player = document.getElementById('player');
+                if (isColliding(shot.element, player)) {
+                    gameState.lives--;
+                    updateLives();
+                    createExplosion(gameState.playerX, window.innerHeight - 80);
+                    shot.element.remove();
+                    gameState.enemyShots.splice(index, 1);
+                    
+                    if (gameState.lives <= 0) {
+                        endGame(false);
+                    }
+                }
+                
+                if (shot.y > window.innerHeight) {
+                    shot.element.remove();
+                    gameState.enemyShots.splice(index, 1);
+                }
+            });
+            
             updateUI();
+            gameLoopId = requestAnimationFrame(gameLoop);
         }
 
-        function createLaser(color) {
-            const laser = document.createElement('div');
-            laser.className = 'laser-beam';
-            
-            const colors = {
-                red: '#ff4757',
-                blue: '#3742fa',
-                green: '#2ed573',
-                yellow: '#ffa502'
-            };
-            
-            laser.style.background = colors[color];
-            laser.style.boxShadow = `0 0 20px ${colors[color]}`;
-            
-            const positions = { red: '12.5%', blue: '37.5%', green: '62.5%', yellow: '87.5%' };
-            laser.style.left = `calc(${positions[color]} - 2px)`;
-            
-            document.getElementById('gameArea').appendChild(laser);
-            setTimeout(() => laser.remove(), 150);
+        function isColliding(el1, el2) {
+            const rect1 = el1.getBoundingClientRect();
+            const rect2 = el2.getBoundingClientRect();
+            return !(rect1.right < rect2.left || rect1.left > rect2.right || 
+                     rect1.bottom < rect2.top || rect1.top > rect2.bottom);
         }
 
-        function handleBadDestroyed(target) {
-            const points = 150;
-            gameState.score += points;
-            gameState.combo++;
-            if (gameState.combo > gameState.maxCombo) gameState.maxCombo = gameState.combo;
-            gameState.badDestroyed++;
+        function shoot() {
+            if (!gameState.isPlaying) return;
             
-            showFeedback(
-                target.element.offsetLeft + 22, 
-                target.y + 22, 
-                'points-bonus', 
-                `+${points}`
-            );
+            const shot = document.createElement('div');
+            shot.className = 'shot';
+            shot.style.left = `calc(${gameState.playerX}% + 18px)`;
+            shot.style.top = (window.innerHeight - 90) + 'px';
+            document.getElementById('gameArea').appendChild(shot);
             
-            setTimeout(() => {
-                target.element.remove();
-                gameState.objects = gameState.objects.filter(o => o !== target);
-            }, 200);
+            gameState.shots.push({
+                element: shot,
+                y: window.innerHeight - 90
+            });
         }
 
-        function handleGoodDestroyed(target) {
-            const penalty = 50;
-            gameState.score = Math.max(0, gameState.score - penalty);
-            gameState.combo = 0;
-            gameState.goodDestroyed++;
+        function createEnemyShot(x, y) {
+            const shot = document.createElement('div');
+            shot.className = 'enemy-shot';
+            shot.style.left = x + 'px';
+            shot.style.top = y + 'px';
+            document.getElementById('gameArea').appendChild(shot);
             
-            showFeedback(
-                target.element.offsetLeft + 22, 
-                target.y + 22, 
-                'points-bad', 
-                `-${penalty}`
-            );
-            
-            setTimeout(() => {
-                target.element.remove();
-                gameState.objects = gameState.objects.filter(o => o !== target);
-            }, 200);
+            gameState.enemyShots.push({
+                element: shot,
+                y: y
+            });
         }
 
-        function showFeedback(x, y, className, text) {
-            const feedback = document.createElement('div');
-            feedback.className = `hit-effect ${className}`;
-            feedback.textContent = text;
-            feedback.style.left = (x - 40) + 'px';
-            feedback.style.top = y + 'px';
-            document.getElementById('gameArea').appendChild(feedback);
-            setTimeout(() => feedback.remove(), 600);
+        function createExplosion(x, y) {
+            const exp = document.createElement('div');
+            exp.className = 'explosion';
+            exp.textContent = '💥';
+            exp.style.left = x + 'px';
+            exp.style.top = y + 'px';
+            document.getElementById('gameArea').appendChild(exp);
+            setTimeout(() => exp.remove(), 400);
+        }
+
+        function showPoints(x, y, text, type) {
+            const points = document.createElement('div');
+            points.className = `points points-${type}`;
+            points.textContent = text;
+            points.style.left = x + 'px';
+            points.style.top = y + 'px';
+            document.getElementById('gameArea').appendChild(points);
+            setTimeout(() => points.remove(), 600);
         }
 
         function updateLives() {
-            const hearts = '❤️'.repeat(gameState.lives) + '🖤'.repeat(3 - gameState.lives);
-            document.getElementById('lives').textContent = hearts;
+            document.getElementById('lives').textContent = `VIDAS: ${'❤️'.repeat(gameState.lives)}${'🖤'.repeat(3-gameState.lives)}`;
         }
 
         function updateUI() {
-            document.getElementById('score').textContent = gameState.score;
-            document.getElementById('combo').textContent = `Combo: ${gameState.combo}`;
+            document.getElementById('score').textContent = `PUNTOS: ${gameState.score}`;
         }
 
-        function startProgressTimer(duration) {
-            const startTime = Date.now();
-            
-            progressInterval = setInterval(() => {
-                if (!gameState.isPlaying) {
-                    clearInterval(progressInterval);
-                    return;
+        function setupControls() {
+            // Teclado
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    shoot();
                 }
-                
-                const elapsed = Date.now() - startTime;
-                const progress = (elapsed / duration) * 100;
-                document.getElementById('progressFill').style.width = progress + '%';
-                
-                if (progress >= 100) endGame(true);
-            }, 100);
+                if (e.key === 'ArrowLeft' || e.key === 'a') moveLeft = true;
+                if (e.key === 'ArrowRight' || e.key === 'd') moveRight = true;
+            });
+            
+            document.addEventListener('keyup', (e) => {
+                if (e.key === 'ArrowLeft' || e.key === 'a') moveLeft = false;
+                if (e.key === 'ArrowRight' || e.key === 'd') moveRight = false;
+            });
+            
+            // Móvil
+            const leftBtn = document.getElementById('leftBtn');
+            const rightBtn = document.getElementById('rightBtn');
+            const fireBtn = document.getElementById('fireBtn');
+            
+            leftBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveLeft = true; });
+            leftBtn.addEventListener('touchend', () => moveLeft = false);
+            rightBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveRight = true; });
+            rightBtn.addEventListener('touchend', () => moveRight = false);
+            fireBtn.addEventListener('touchstart', (e) => { e.preventDefault(); shoot(); });
+            fireBtn.addEventListener('click', shoot);
         }
 
-        function endGame(completed) {
+        function endGame(won) {
             gameState.isPlaying = false;
-            clearInterval(spawnID);
-            cancelAnimationFrame(gameLoopID);
-            clearInterval(progressInterval);
-            
-            if (audio) {
-                audio.pause();
-                audio.currentTime = 0;
-            }
-            
-            const accuracy = gameState.badDestroyed / (gameState.badDestroyed + gameState.badPassed) || 0;
-            let stars = '⭐';
-            let title = completed ? '¡NIVEL COMPLETADO!' : 'GAME OVER';
-            
-            if (accuracy > 0.6) stars = '⭐⭐';
-            if (accuracy > 0.8) stars = '⭐⭐⭐';
-            
-            if (!completed) {
-                title = '💥 MISIÓN FALLIDA';
-                document.getElementById('endTitle').style.color = '#ff4757';
-            } else {
-                document.getElementById('endTitle').style.color = '#00d4ff';
-            }
-            
-            document.getElementById('endTitle').textContent = title;
-            document.getElementById('finalScore').textContent = gameState.score;
-            document.getElementById('stars').textContent = stars;
-            document.getElementById('stats').innerHTML = `
-                <p><strong>${levels[gameState.level].name}</strong></p>
-                <p style="color:#2ed573">Malos: ${gameState.badDestroyed}</p>
-                <p style="color:#ff4757">Buenos destruidos: ${gameState.goodDestroyed}</p>
-                <p>Disparos: ${gameState.shotsFired}</p>
-                <p>Combo max: ${gameState.maxCombo}</p>
-            `;
+            cancelAnimationFrame(gameLoopId);
+            if (audio) audio.pause();
             
             document.getElementById('endScreen').style.display = 'flex';
+            document.getElementById('endTitle').textContent = won ? '¡VICTORIA!' : 'GAME OVER';
+            document.getElementById('endTitle').style.color = won ? '#0f0' : '#f00';
+            document.getElementById('finalScore').textContent = gameState.score;
+            
+            const badsDestroyed = gameState.enemies.filter(e => !e.isBad).length; // Aproximado
+            document.getElementById('stats').innerHTML = `
+                NIVEL ${gameState.level} COMPLETADO<br>
+                PUNTUACIÓN FINAL: ${gameState.score}
+            `;
         }
 
-        // Controles de teclado simples
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                e.preventDefault();
-                shoot(selectedCannon);
-            }
-            
-            const selectMap = {
-                'ArrowLeft': 'red', 'KeyA': 'red',
-                'ArrowDown': 'blue', 'KeyS': 'blue',
-                'ArrowUp': 'green', 'KeyW': 'green',
-                'ArrowRight': 'yellow', 'KeyD': 'yellow'
-            };
-            
-            if (selectMap[e.code]) {
-                selectedCannon = selectMap[e.code];
-                // Visual feedback
-                document.querySelectorAll('.laser-btn').forEach(btn => {
-                    btn.style.opacity = '0.6';
-                });
-                document.querySelector(`.laser-btn.${selectedCannon}`).style.opacity = '1';
-            }
-        });
-
-        createStarfield();
-        document.addEventListener('gesturestart', e => e.preventDefault());
+        // Prevenir zoom
+        document.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
     </script>
 
 </body>
