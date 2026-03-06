@@ -142,7 +142,7 @@
             color: #ddd;
         }
 
-        .start-btn {
+        .start-btn, .continue-btn {
             background: linear-gradient(135deg, #060, #0f0);
             color: #000;
             border: none;
@@ -150,14 +150,21 @@
             font-size: 1.3em;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 13px;
+            margin-top: 20px;
             font-family: 'Courier New', monospace;
             letter-spacing: 2px;
             box-shadow: 0 0 22px rgba(0,255,0,.5);
             transition: .2s;
         }
-        .start-btn:hover { transform: scale(1.04); }
-        .start-btn:active { transform: scale(.97); }
+        .start-btn:hover, .continue-btn:hover { transform: scale(1.04); }
+        .start-btn:active, .continue-btn:active { transform: scale(.97); }
+
+        .continue-btn {
+            background: linear-gradient(135deg, #006, #00f);
+            color: #fff;
+            box-shadow: 0 0 22px rgba(0,100,255,.5);
+            border: 2px solid #0af;
+        }
 
         /* Área de juego */
         #gameArea {
@@ -368,30 +375,32 @@
         .pts-u { color: #f0f; }
         .pts-p { color: #ff0; }
 
-        /* Pantalla de nivel */
+        /* Pantalla de nivel completado */
         #lvlScreen {
             background: rgba(0,0,0,.97);
             display: none;
             border: 3px solid #0f0;
+            z-index: 1000;
         }
         #lvlScreen h2 {
             color: #0f0;
             font-size: 1.8em;
             text-shadow: 0 0 20px #0f0;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             text-align: center;
         }
-        #lvlScreen p { color: #aaa; margin: 3px; text-align: center; font-size: .9em; }
-        .bar-wrap {
-            width: 200px;
-            height: 6px;
-            background: #111;
-            border: 1px solid #0f0;
-            margin-top: 12px;
-            border-radius: 4px;
-            overflow: hidden;
+        #lvlScreen p { 
+            color: #aaa; 
+            margin: 8px; 
+            text-align: center; 
+            font-size: 1em; 
         }
-        .bar-fill { height: 100%; background: #0f0; width: 0; }
+        #lvlScoreBig {
+            color: #0f0;
+            font-size: 2em;
+            margin: 15px 0;
+            text-shadow: 0 0 10px #0f0;
+        }
 
         /* Pantalla final */
         #endScreen {
@@ -430,7 +439,7 @@
         }
         .game-btn:hover { background: #0f0; color: #000; }
 
-        /* Controles móviles - FUEGO IZQUIERDA, FLECHAS DERECHA */
+        /* Controles móviles */
         #mobileControls {
             position: fixed;
             bottom: 0;
@@ -509,6 +518,7 @@
             #fireBtn { width: 65px; height: 65px; font-size: 1.3em; }
         }
     </style>
+<base target="_blank">
 </head>
 <body>
     <!-- Estrellas -->
@@ -546,12 +556,13 @@
         <button class="start-btn" id="startBtn">► INICIAR JUEGO</button>
     </div>
 
-    <!-- Pantalla nivel -->
+    <!-- Pantalla nivel completado CON BOTÓN -->
     <div id="lvlScreen" class="screen">
-        <h2 id="lvlTitle">¡NIVEL COMPLETADO! 🎉</h2>
-        <p id="lvlScore"></p>
-        <p id="lvlNext"></p>
-        <div class="bar-wrap"><div class="bar-fill" id="lvlBar"></div></div>
+        <h2 id="lvlTitle">🎉 ¡NIVEL COMPLETADO! 🎉</h2>
+        <p id="lvlScoreText">Puntuación:</p>
+        <p id="lvlScoreBig">0</p>
+        <p id="lvlNextNum">Siguiente: Nivel 2</p>
+        <button class="continue-btn" id="continueBtn">▶ NIVEL SUPERADO - CONTINUAR</button>
     </div>
 
     <!-- Área juego -->
@@ -570,7 +581,7 @@
         <div id="pshield"></div>
         <div id="ufo">🛸</div>
 
-        <!-- Controles móviles: FUEGO izquierda, FLECHAS derecha -->
+        <!-- Controles móviles -->
         <div id="mobileControls">
             <div id="fireBtn">💥</div>
             <div class="arrows">
@@ -590,7 +601,7 @@
     </div>
 
     <script>
-        // ===== MÚSICA DE FONDO CON OSCILADORES (COMO LA PRIMERA VERSIÓN) =====
+        // ===== MÚSICA DE FONDO =====
         let bgMusic = null;
         let musicEnabled = false;
         
@@ -602,7 +613,6 @@
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 bgMusic = new AudioContext();
                 
-                // Secuencia musical más elaborada
                 const melody = [
                     {f: 220, d: 0.15}, {f: 261, d: 0.15}, {f: 329, d: 0.15}, {f: 392, d: 0.2},
                     {f: 329, d: 0.15}, {f: 392, d: 0.15}, {f: 440, d: 0.15}, {f: 523, d: 0.2},
@@ -611,7 +621,6 @@
                 ];
                 
                 let noteIndex = 0;
-                let nextNoteTime = 0;
                 
                 function playNote() {
                     if (!musicEnabled || !bgMusic) return;
@@ -638,7 +647,7 @@
                 
                 playNote();
                 
-                // Armonía de fondo (bajo)
+                // Bajo
                 function playBass() {
                     if (!musicEnabled || !bgMusic) return;
                     
@@ -680,7 +689,7 @@
             }
         }
 
-        // ===== AUDIO PARA EFECTOS DE SONIDO =====
+        // ===== AUDIO PARA EFECTOS =====
         let sfxCtx = null;
         
         function initSFX() {
@@ -804,7 +813,7 @@
             }
         })();
 
-        // ===== 16 NIVELES CON VELOCIDADES AJUSTADAS =====
+        // ===== 16 NIVELES =====
         const LEVELS = [
             { rows: 3, cols: 7, spd: 40, drop: 8, shoot: .0003, fast: 0, tank: 0 },
             { rows: 3, cols: 8, spd: 45, drop: 10, shoot: .0005, fast: 1, tank: 0 },
@@ -840,7 +849,7 @@
         let stormT = 0, stormActive = false, stormEnd = 0, stormNext = 0;
         let transitioning = false;
         let lastTS = 0;
-        let frameCount = 0;
+        let nextLevelIndex = 0; // Para guardar el siguiente nivel
 
         function resetState() {
             G = {
@@ -850,20 +859,42 @@
                 ufoActive: false, ufoX: -80, ufoDir: 1, ufoFrames: 0
             };
             tripleT = 0; shieldT = 0; bombs = 0;
-            stormT = 0; stormActive = false; transitioning = false; lastTS = 0; frameCount = 0;
+            stormT = 0; stormActive = false; transitioning = false; lastTS = 0;
             stormNext = 500 + Math.floor(Math.random()*800);
+            nextLevelIndex = 0;
         }
 
         // ===== UTILS =====
-        function show(id) { document.getElementById(id).style.display = 'flex'; }
-        function hide(id) { document.getElementById(id).style.display = 'none'; }
+        function show(id) { 
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'flex'; 
+        }
+        function hide(id) { 
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none'; 
+        }
         function isMob() { return window.innerWidth < 769; }
+
+        // ===== DETENER JUEGO COMPLETAMENTE =====
+        function stopGameLoop() {
+            G.playing = false;
+            cancelAnimationFrame(rafId);
+            rafId = null;
+            lastTS = 0;
+        }
 
         // ===== CARGAR NIVEL =====
         function loadLevel(idx) {
             if (idx >= LEVELS.length) { endGame(true); return; }
             
-            // IMPORTANTE: Resetear completamente el estado del juego para cada nivel
+            // Detener todo primero
+            stopGameLoop();
+            stopStorm();
+            
+            // Guardar índice
+            nextLevelIndex = idx + 1;
+            
+            // Resetear estado completo
             transitioning = false;
             G.lvl = idx;
             G.dir = 1;
@@ -876,37 +907,43 @@
             G.ufoX = -80;
             G.ufoFrames = 0;
             
-            // Resetear power-ups
             tripleT = 0;
             shieldT = 0;
-            
-            // Resetear tormenta
-            stopStorm();
             stormT = 0;
             stormNext = 500 + Math.floor(Math.random()*800);
-            
-            // Resetear timestamp para delta time
-            lastTS = 0;
-            frameCount = 0;
 
+            // Limpiar DOM
             const ga = document.getElementById('gameArea');
-            ga.querySelectorAll('.enemy, .shot, .enemy-shot, .explosion, .pts, .shield, .powerup').forEach(e => e.remove());
+            if (ga) {
+                ga.querySelectorAll('.enemy, .shot, .enemy-shot, .explosion, .pts, .shield, .powerup').forEach(e => e.remove());
+            }
             
-            document.getElementById('ufo').style.display = 'none';
-            document.getElementById('pshield').style.display = 'none';
-            document.getElementById('powerInd').style.display = 'none';
+            const ufo = document.getElementById('ufo');
+            if (ufo) ufo.style.display = 'none';
+            
+            const pshield = document.getElementById('pshield');
+            if (pshield) pshield.style.display = 'none';
+            
+            const powerInd = document.getElementById('powerInd');
+            if (powerInd) powerInd.style.display = 'none';
+            
             syncBombBtn();
 
+            // Mostrar pantalla de juego
             show('gameArea'); 
             hide('startScreen'); 
             hide('lvlScreen'); 
             hide('endScreen');
-            document.getElementById('levelInd').textContent = `NIVEL ${idx + 1}/16`;
+            
+            const levelInd = document.getElementById('levelInd');
+            if (levelInd) levelInd.textContent = `NIVEL ${idx + 1}/16`;
 
             const mob = isMob();
             const pl = document.getElementById('player');
-            pl.style.bottom = mob ? '115px' : '20px';
-            pl.style.left = G.px + '%';
+            if (pl) {
+                pl.style.bottom = mob ? '115px' : '20px';
+                pl.style.left = G.px + '%';
+            }
 
             if (!ctrlReady) { setupControls(); ctrlReady = true; }
             
@@ -914,8 +951,9 @@
             createShields();
             updateHUD();
 
+            // Iniciar loop limpio
             G.playing = true;
-            cancelAnimationFrame(rafId);
+            lastTS = 0;
             rafId = requestAnimationFrame(loop);
         }
 
@@ -1029,23 +1067,14 @@
             b.style.left = (Math.floor(Math.random()*60) + 20) + '%';
             b.style.top = (Math.floor(Math.random()*25) + 10) + '%';
             showPts(window.innerWidth / 2, window.innerHeight * .38, '⚡ TORMENTA ⚡', 'pts-u');
-            try {
-                if (sfxCtx) {
-                    const o = sfxCtx.createOscillator(), g = sfxCtx.createGain();
-                    o.connect(g); g.connect(sfxCtx.destination);
-                    o.type = 'sawtooth';
-                    o.frequency.value = 55;
-                    g.gain.setValueAtTime(0.2, sfxCtx.currentTime);
-                    g.gain.exponentialRampToValueAtTime(0.001, sfxCtx.currentTime + 0.5);
-                    o.start(); o.stop(sfxCtx.currentTime + 0.5);
-                }
-            } catch(e) {}
         }
         
         function stopStorm() {
             stormActive = false;
-            document.getElementById('lightning').style.display = 'none';
-            document.getElementById('lbolt').style.display = 'none';
+            const lightning = document.getElementById('lightning');
+            const lbolt = document.getElementById('lbolt');
+            if (lightning) lightning.style.display = 'none';
+            if (lbolt) lbolt.style.display = 'none';
         }
 
         // ===== POWER-UPS =====
@@ -1180,20 +1209,21 @@
             }
         }
 
-        // ===== MAIN LOOP - CORREGIDO =====
+        // ===== MAIN LOOP =====
         function loop(ts) {
-            rafId = requestAnimationFrame(loop);
-            if (!G.playing || paused || transitioning) return;
-
-            frameCount++;
+            if (!G.playing) return;
             
-            // CORRECCIÓN: Manejo robusto del delta time
-            if (!lastTS || lastTS === 0) {
+            rafId = requestAnimationFrame(loop);
+            
+            if (paused || transitioning) return;
+
+            // Delta time
+            if (!lastTS) {
                 lastTS = ts;
-                return; // Saltar primer frame para evitar delta enorme
+                return;
             }
             
-            const dt = Math.min((ts - lastTS) / 1000, 0.05); // Max 50ms para evitar saltos
+            const dt = Math.min((ts - lastTS) / 1000, 0.05);
             lastTS = ts;
 
             const W = window.innerWidth, H = window.innerHeight;
@@ -1207,10 +1237,9 @@
             G.px = Math.max(2, Math.min(98, G.px));
             document.getElementById('player').style.left = G.px + '%';
 
-            // Mover enemigos - VELOCIDAD FIJA POR NIVEL
+            // Mover enemigos
             let edge = false;
             G.enemies.forEach(e => {
-                // Velocidad base del nivel * factor de tipo * multiplicador de tormenta * dirección
                 const moveSpeed = cfg.spd * e.spdFactor * spdMult * G.dir * dt;
                 e.x += moveSpeed;
                 const ew = parseInt(e.el.style.width);
@@ -1223,7 +1252,6 @@
                     const e = G.enemies[i];
                     e.y += cfg.drop;
                     e.el.style.top = e.y + 'px';
-                    // Verificar si llegaron al fondo
                     if (e.y > H - pBot - 50 && !transitioning) { 
                         endGame(false); 
                         return; 
@@ -1232,7 +1260,7 @@
             }
             G.enemies.forEach(e => e.el.style.left = e.x + 'px');
 
-            // Disparo enemigo (probabilidad por frame)
+            // Disparo enemigo
             if (Math.random() < cfg.shoot * 60 * dt) {
                 const bads = G.enemies.filter(e => e.isBad);
                 if (bads.length) {
@@ -1405,38 +1433,47 @@
             document.getElementById('score').textContent = `PUNTOS: ${G.score}`;
         }
 
-        // ===== NIVEL COMPLETADO =====
+        // ===== NIVEL COMPLETADO - CON BOTÓN =====
         function levelDone() {
             if (transitioning) return;
             transitioning = true;
-            G.playing = false;
+            
+            // Detener el juego completamente
+            stopGameLoop();
             stopStorm();
             sfxLevelUp();
             
             const isLast = G.lvl >= LEVELS.length - 1;
+            
+            // Configurar pantalla de nivel completado
+            const lvlScreen = document.getElementById('lvlScreen');
+            const lvlTitle = document.getElementById('lvlTitle');
+            const lvlScoreBig = document.getElementById('lvlScoreBig');
+            const lvlNextNum = document.getElementById('lvlNextNum');
+            const continueBtn = document.getElementById('continueBtn');
+            
+            if (isLast) {
+                lvlTitle.textContent = '🏆 ¡MISIÓN CUMPLIDA! 🏆';
+                lvlNextNum.textContent = '¡Has completado todos los niveles!';
+                continueBtn.textContent = '▶ VER RESULTADOS';
+                nextLevelIndex = 99; // Marcador especial para victoria
+            } else {
+                lvlTitle.textContent = '🎉 ¡NIVEL COMPLETADO! 🎉';
+                lvlNextNum.textContent = `Siguiente: Nivel ${G.lvl + 2}`;
+                continueBtn.textContent = '▶ NIVEL SUPERADO - CONTINUAR';
+                nextLevelIndex = G.lvl + 1;
+            }
+            
+            lvlScoreBig.textContent = G.score;
+            
+            // Mostrar pantalla
             show('lvlScreen');
-            document.getElementById('lvlTitle').textContent = isLast ? '🏆 ¡MISIÓN CUMPLIDA!' : '🎉 ¡NIVEL COMPLETADO!';
-            document.getElementById('lvlScore').textContent = `Puntuación: ${G.score}`;
-            document.getElementById('lvlNext').textContent = isLast ? '' : ` Preparando nivel ${G.lvl + 2}...`;
-            
-            const bar = document.getElementById('lvlBar');
-            bar.style.transition = 'none';
-            bar.style.width = '0';
-            void bar.offsetWidth;
-            bar.style.transition = 'width 1.9s linear';
-            bar.style.width = '100%';
-            
-            setTimeout(() => {
-                if (isLast) endGame(true);
-                else { G.lvl++; loadLevel(G.lvl); }
-            }, 2100);
         }
 
         // ===== FIN JUEGO =====
         function endGame(win) {
-            G.playing = false;
+            stopGameLoop();
             transitioning = false;
-            cancelAnimationFrame(rafId);
             stopStorm();
             stopMusic();
             
@@ -1459,7 +1496,7 @@
                 stopMusic();
             } else {
                 startMusic();
-                lastTS = 0; // Resetear timestamp al reanudar
+                lastTS = 0;
             }
         }
 
@@ -1530,20 +1567,34 @@
             lt = n;
         }, false);
 
-        // ===== INICIO CON INICIALIZACIÓN DE AUDIO Y MÚSICA =====
-        document.getElementById('startBtn').addEventListener('click', function handler(e) {
+        // ===== BOTÓN INICIAR =====
+        document.getElementById('startBtn').addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
             
-            // Inicializar todo el audio
             initSFX();
             startMusic();
             
-            // Pequeña pausa para asegurar que todo esté listo
             setTimeout(() => {
                 resetState();
                 loadLevel(0);
             }, 100);
+        });
+
+        // ===== BOTÓN CONTINUAR NIVEL =====
+        document.getElementById('continueBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            hide('lvlScreen');
+            
+            if (nextLevelIndex === 99) {
+                // Victoria total
+                endGame(true);
+            } else {
+                // Cargar siguiente nivel
+                loadLevel(nextLevelIndex);
+            }
         });
     </script>
 </body>
