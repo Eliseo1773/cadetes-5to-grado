@@ -22,7 +22,7 @@
             font-family: 'Courier New', monospace;
         }
 
-        /* Estrellas de fondo (ahora células) */
+        /* Células de fondo */
         #stars {
             position: fixed;
             inset: 0;
@@ -851,6 +851,7 @@
         let transitioning = false;
         let lastTS = 0;
         let nextLevelIndex = 0;
+        let gameLoopRunning = false; // NUEVO: Flag para evitar múltiples loops
 
         function resetState() {
             G = {
@@ -863,6 +864,7 @@
             stormT = 0; stormActive = false; transitioning = false; lastTS = 0;
             stormNext = 500 + Math.floor(Math.random()*800);
             nextLevelIndex = 0;
+            gameLoopRunning = false; // NUEVO: Resetear flag
         }
 
         // ===== UTILS =====
@@ -879,17 +881,25 @@
         // ===== DETENER JUEGO =====
         function stopGameLoop() {
             G.playing = false;
-            cancelAnimationFrame(rafId);
-            rafId = null;
+            gameLoopRunning = false; // NUEVO: Marcar que no está corriendo
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+            }
             lastTS = 0;
         }
 
         // ===== CARGAR NIVEL =====
         function loadLevel(idx) {
-            if (idx >= LEVELS.length) { endGame(true); return; }
-            
+            // CRÍTICO: Primero detener TODO completamente
             stopGameLoop();
             stopStorm();
+            
+            // Limpiar cualquier timeout residual
+            if (autoFireId) {
+                clearInterval(autoFireId);
+                autoFireId = null;
+            }
             
             nextLevelIndex = idx + 1;
             
@@ -947,9 +957,13 @@
             createShields();
             updateHUD();
 
-            G.playing = true;
-            lastTS = 0;
-            rafId = requestAnimationFrame(loop);
+            // IMPORTANTE: Solo iniciar si no hay otro loop corriendo
+            if (!gameLoopRunning) {
+                G.playing = true;
+                gameLoopRunning = true; // NUEVO: Marcar que está corriendo
+                lastTS = 0;
+                rafId = requestAnimationFrame(loop);
+            }
         }
 
         // ===== ESCUDOS (BARRERAS TISULARES) =====
@@ -1211,7 +1225,11 @@
 
         // ===== MAIN LOOP =====
         function loop(ts) {
-            if (!G.playing) return;
+            // CRÍTICO: Verificar si debemos seguir corriendo
+            if (!G.playing || !gameLoopRunning) {
+                gameLoopRunning = false;
+                return;
+            }
             
             rafId = requestAnimationFrame(loop);
             
@@ -1222,6 +1240,7 @@
                 return;
             }
             
+            // CRÍTICO: Limitar delta time para evitar saltos grandes
             const dt = Math.min((ts - lastTS) / 1000, 0.05);
             lastTS = ts;
 
@@ -1440,6 +1459,7 @@
             if (transitioning) return;
             transitioning = true;
             
+            // CRÍTICO: Detener todo inmediatamente
             stopGameLoop();
             stopStorm();
             sfxLevelUp();
