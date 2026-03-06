@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>👾 CADETES SPACE INVADERS - Desarrollado por Eliseo Espinoza</title>
+    <title>👾 CADETES DEL 5to. GRADO - Desarrollado por Eliseo Espinoza</title>
     <style>
         * {
             margin: 0;
@@ -96,12 +96,12 @@
         }
 
         #startScreen h1 {
-            font-size: clamp(1.3em, 5vw, 2em);
+            font-size: clamp(1.2em, 4.5vw, 1.8em);
             color: #0f0;
             text-align: center;
             margin-bottom: 4px;
             text-shadow: 0 0 20px #0f0, 0 0 50px #0f0;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             animation: blink 1s infinite;
         }
 
@@ -110,7 +110,7 @@
             50% { opacity: 0.7; }
         }
 
-        .sub { color: #0a0; font-size: .78em; letter-spacing: 2px; margin-bottom: 3px; }
+        .sub { color: #0a0; font-size: .75em; letter-spacing: 2px; margin-bottom: 3px; text-align: center; }
         .dev { color: #f0f; font-size: .72em; margin-bottom: 12px; opacity: .8; }
 
         .box {
@@ -521,7 +521,7 @@
 
     <!-- Pantalla inicio -->
     <div id="startScreen" class="screen">
-        <h1>👾 CADETES<br>SPACE INVADERS</h1>
+        <h1>👾 CADETES DEL<br>5to. GRADO 👾</h1>
         <div class="sub">▸ 16 NIVELES · POWER-UPS · TORMENTA ◂</div>
         <div class="dev">Desarrollado por Eliseo Espinoza</div>
         
@@ -590,81 +590,207 @@
     </div>
 
     <script>
-        // ===== INICIALIZACIÓN SEGURA DE AUDIO =====
-        let AC = null;
-        let audioInitialized = false;
+        // ===== MÚSICA DE FONDO CON OSCILADORES (COMO LA PRIMERA VERSIÓN) =====
+        let bgMusic = null;
+        let musicEnabled = false;
         
-        function initAudio() {
-            if (audioInitialized) return true;
+        function startMusic() {
+            if (musicEnabled) return;
+            musicEnabled = true;
+            
             try {
-                AC = new (window.AudioContext || window.webkitAudioContext)();
-                if (AC.state === 'suspended') {
-                    AC.resume();
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                bgMusic = new AudioContext();
+                
+                // Secuencia musical más elaborada
+                const melody = [
+                    {f: 220, d: 0.15}, {f: 261, d: 0.15}, {f: 329, d: 0.15}, {f: 392, d: 0.2},
+                    {f: 329, d: 0.15}, {f: 392, d: 0.15}, {f: 440, d: 0.15}, {f: 523, d: 0.2},
+                    {f: 440, d: 0.15}, {f: 392, d: 0.15}, {f: 329, d: 0.15}, {f: 261, d: 0.2},
+                    {f: 220, d: 0.3}
+                ];
+                
+                let noteIndex = 0;
+                let nextNoteTime = 0;
+                
+                function playNote() {
+                    if (!musicEnabled || !bgMusic) return;
+                    
+                    const note = melody[noteIndex % melody.length];
+                    const osc = bgMusic.createOscillator();
+                    const gain = bgMusic.createGain();
+                    
+                    osc.connect(gain);
+                    gain.connect(bgMusic.destination);
+                    
+                    osc.type = 'square';
+                    osc.frequency.value = note.f;
+                    
+                    gain.gain.setValueAtTime(0.08, bgMusic.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, bgMusic.currentTime + note.d);
+                    
+                    osc.start(bgMusic.currentTime);
+                    osc.stop(bgMusic.currentTime + note.d);
+                    
+                    noteIndex++;
+                    setTimeout(playNote, note.d * 1000 + 50);
                 }
-                audioInitialized = true;
-                return true;
+                
+                playNote();
+                
+                // Armonía de fondo (bajo)
+                function playBass() {
+                    if (!musicEnabled || !bgMusic) return;
+                    
+                    const bassNotes = [65, 73, 82, 98];
+                    const note = bassNotes[Math.floor(Date.now() / 1000) % bassNotes.length];
+                    
+                    const osc = bgMusic.createOscillator();
+                    const gain = bgMusic.createGain();
+                    
+                    osc.connect(gain);
+                    gain.connect(bgMusic.destination);
+                    
+                    osc.type = 'triangle';
+                    osc.frequency.value = note;
+                    
+                    gain.gain.setValueAtTime(0.05, bgMusic.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, bgMusic.currentTime + 0.8);
+                    
+                    osc.start(bgMusic.currentTime);
+                    osc.stop(bgMusic.currentTime + 0.8);
+                    
+                    setTimeout(playBass, 1000);
+                }
+                
+                playBass();
+                
             } catch(e) {
-                console.log('Audio no disponible');
-                return false;
+                console.log('Música no disponible');
             }
         }
         
-        function getAC() {
-            if (!AC) initAudio();
-            return AC;
+        function stopMusic() {
+            musicEnabled = false;
+            if (bgMusic) {
+                try {
+                    bgMusic.close();
+                } catch(e) {}
+                bgMusic = null;
+            }
+        }
+
+        // ===== AUDIO PARA EFECTOS DE SONIDO =====
+        let sfxCtx = null;
+        
+        function initSFX() {
+            if (sfxCtx) return;
+            try {
+                sfxCtx = new (window.AudioContext || window.webkitAudioContext)();
+            } catch(e) {}
         }
         
-        function playTone(freq, dur, type, vol) {
-            if (!audioInitialized) return;
+        function sfxShoot() {
+            if (!sfxCtx) return;
             try {
-                const ac = getAC();
-                if (!ac) return;
-                const o = ac.createOscillator(), g = ac.createGain();
-                o.connect(g); g.connect(ac.destination);
-                o.type = type || 'square';
-                o.frequency.setValueAtTime(freq, ac.currentTime);
-                g.gain.setValueAtTime(vol || 0.18, ac.currentTime);
-                g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + dur);
-                o.start(ac.currentTime);
-                o.stop(ac.currentTime + dur);
+                const o = sfxCtx.createOscillator(), g = sfxCtx.createGain();
+                o.connect(g); g.connect(sfxCtx.destination);
+                o.type = 'square';
+                o.frequency.setValueAtTime(880, sfxCtx.currentTime);
+                g.gain.setValueAtTime(0.1, sfxCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.001, sfxCtx.currentTime + 0.1);
+                o.start(); o.stop(sfxCtx.currentTime + 0.1);
             } catch(e) {}
         }
-
-        function sfxShoot() { playTone(880, 0.08, 'square', 0.12); }
-        function sfxExplode() { playTone(80, 0.25, 'sawtooth', 0.22); playTone(120, 0.2, 'square', 0.1); }
-        function sfxPowerup() { playTone(520, 0.08, 'sine', 0.2); setTimeout(() => playTone(780, 0.1, 'sine', 0.2), 80); }
-        function sfxLife() { playTone(440, 0.1, 'sine', 0.2); setTimeout(() => playTone(660, 0.15, 'sine', 0.2), 100); }
-        function sfxBomb() { playTone(60, 0.4, 'sawtooth', 0.3); playTone(100, 0.35, 'square', 0.2); }
+        
+        function sfxExplode() {
+            if (!sfxCtx) return;
+            try {
+                const o1 = sfxCtx.createOscillator(), g1 = sfxCtx.createGain();
+                o1.connect(g1); g1.connect(sfxCtx.destination);
+                o1.type = 'sawtooth';
+                o1.frequency.setValueAtTime(100, sfxCtx.currentTime);
+                o1.frequency.exponentialRampToValueAtTime(40, sfxCtx.currentTime + 0.2);
+                g1.gain.setValueAtTime(0.2, sfxCtx.currentTime);
+                g1.gain.exponentialRampToValueAtTime(0.001, sfxCtx.currentTime + 0.2);
+                o1.start(); o1.stop(sfxCtx.currentTime + 0.2);
+            } catch(e) {}
+        }
+        
+        function sfxPowerup() {
+            if (!sfxCtx) return;
+            try {
+                [523, 659, 783].forEach((f, i) => {
+                    setTimeout(() => {
+                        const o = sfxCtx.createOscillator(), g = sfxCtx.createGain();
+                        o.connect(g); g.connect(sfxCtx.destination);
+                        o.type = 'sine';
+                        o.frequency.value = f;
+                        g.gain.setValueAtTime(0.15, sfxCtx.currentTime);
+                        g.gain.exponentialRampToValueAtTime(0.001, sfxCtx.currentTime + 0.1);
+                        o.start(); o.stop(sfxCtx.currentTime + 0.1);
+                    }, i * 80);
+                });
+            } catch(e) {}
+        }
+        
+        function sfxLife() {
+            if (!sfxCtx) return;
+            try {
+                const o = sfxCtx.createOscillator(), g = sfxCtx.createGain();
+                o.connect(g); g.connect(sfxCtx.destination);
+                o.type = 'sine';
+                o.frequency.setValueAtTime(523, sfxCtx.currentTime);
+                o.frequency.setValueAtTime(659, sfxCtx.currentTime + 0.1);
+                g.gain.setValueAtTime(0.15, sfxCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.001, sfxCtx.currentTime + 0.3);
+                o.start(); o.stop(sfxCtx.currentTime + 0.3);
+            } catch(e) {}
+        }
+        
+        function sfxBomb() {
+            if (!sfxCtx) return;
+            try {
+                const o = sfxCtx.createOscillator(), g = sfxCtx.createGain();
+                o.connect(g); g.connect(sfxCtx.destination);
+                o.type = 'sawtooth';
+                o.frequency.setValueAtTime(80, sfxCtx.currentTime);
+                o.frequency.exponentialRampToValueAtTime(20, sfxCtx.currentTime + 0.4);
+                g.gain.setValueAtTime(0.25, sfxCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.001, sfxCtx.currentTime + 0.4);
+                o.start(); o.stop(sfxCtx.currentTime + 0.4);
+            } catch(e) {}
+        }
+        
         function sfxLevelUp() {
-            [262, 330, 392, 523].forEach((f, i) => setTimeout(() => playTone(f, 0.15, 'sine', 0.22), i * 100));
-        }
-        function sfxHit() { playTone(200, 0.12, 'sawtooth', 0.2); }
-
-        // Música de fondo
-        let bgActive = false, bgTimer = null;
-        function startBGMusic() {
-            stopBGMusic();
-            if (!audioInitialized) return;
+            if (!sfxCtx) return;
             try {
-                const ac = getAC();
-                if (!ac) return;
-                const notes = [130, 146, 164, 174, 196, 220];
-                let idx = 0;
-                function playNext() {
-                    if (!bgActive) return;
-                    const o = ac.createOscillator(), g = ac.createGain();
-                    o.connect(g); g.connect(ac.destination);
-                    o.type = 'triangle';
-                    o.frequency.value = notes[idx % notes.length]; idx++;
-                    g.gain.setValueAtTime(0.06, ac.currentTime);
-                    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.18);
-                    o.start(ac.currentTime); o.stop(ac.currentTime + 0.2);
-                    bgTimer = setTimeout(playNext, 220);
-                }
-                bgActive = true; playNext();
+                [262, 330, 392, 523, 659, 783].forEach((f, i) => {
+                    setTimeout(() => {
+                        const o = sfxCtx.createOscillator(), g = sfxCtx.createGain();
+                        o.connect(g); g.connect(sfxCtx.destination);
+                        o.type = 'square';
+                        o.frequency.value = f;
+                        g.gain.setValueAtTime(0.12, sfxCtx.currentTime);
+                        g.gain.exponentialRampToValueAtTime(0.001, sfxCtx.currentTime + 0.15);
+                        o.start(); o.stop(sfxCtx.currentTime + 0.15);
+                    }, i * 120);
+                });
             } catch(e) {}
         }
-        function stopBGMusic() { bgActive = false; clearTimeout(bgTimer); }
+        
+        function sfxHit() {
+            if (!sfxCtx) return;
+            try {
+                const o = sfxCtx.createOscillator(), g = sfxCtx.createGain();
+                o.connect(g); g.connect(sfxCtx.destination);
+                o.type = 'sawtooth';
+                o.frequency.setValueAtTime(150, sfxCtx.currentTime);
+                g.gain.setValueAtTime(0.15, sfxCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.001, sfxCtx.currentTime + 0.1);
+                o.start(); o.stop(sfxCtx.currentTime + 0.1);
+            } catch(e) {}
+        }
 
         // ===== ESTRELLAS =====
         (() => {
@@ -678,24 +804,24 @@
             }
         })();
 
-        // ===== 16 NIVELES =====
+        // ===== 16 NIVELES CON VELOCIDADES AJUSTADAS =====
         const LEVELS = [
-            { rows: 3, cols: 7, spd: 45, drop: 10, shoot: .0004, fast: 0, tank: 0 },
-            { rows: 3, cols: 8, spd: 52, drop: 12, shoot: .0007, fast: 1, tank: 0 },
-            { rows: 3, cols: 9, spd: 58, drop: 12, shoot: .0009, fast: 1, tank: 0 },
-            { rows: 4, cols: 9, spd: 65, drop: 14, shoot: .0011, fast: 2, tank: 0 },
-            { rows: 4, cols: 10, spd: 72, drop: 14, shoot: .0014, fast: 2, tank: 1 },
-            { rows: 4, cols: 11, spd: 78, drop: 16, shoot: .0017, fast: 3, tank: 1 },
-            { rows: 5, cols: 11, spd: 85, drop: 16, shoot: .002, fast: 3, tank: 1 },
-            { rows: 5, cols: 12, spd: 92, drop: 18, shoot: .0023, fast: 4, tank: 2 },
-            { rows: 5, cols: 13, spd: 98, drop: 18, shoot: .0026, fast: 4, tank: 2 },
-            { rows: 6, cols: 13, spd: 105, drop: 20, shoot: .0029, fast: 5, tank: 2 },
-            { rows: 6, cols: 14, spd: 112, drop: 20, shoot: .0032, fast: 6, tank: 3 },
-            { rows: 6, cols: 15, spd: 118, drop: 22, shoot: .0035, fast: 6, tank: 3 },
-            { rows: 7, cols: 14, spd: 125, drop: 22, shoot: .004, fast: 7, tank: 3 },
-            { rows: 7, cols: 15, spd: 132, drop: 24, shoot: .0045, fast: 8, tank: 4 },
-            { rows: 7, cols: 16, spd: 138, drop: 24, shoot: .005, fast: 9, tank: 4 },
-            { rows: 8, cols: 16, spd: 145, drop: 26, shoot: .0055, fast: 10, tank: 5 },
+            { rows: 3, cols: 7, spd: 40, drop: 8, shoot: .0003, fast: 0, tank: 0 },
+            { rows: 3, cols: 8, spd: 45, drop: 10, shoot: .0005, fast: 1, tank: 0 },
+            { rows: 3, cols: 9, spd: 50, drop: 10, shoot: .0007, fast: 1, tank: 0 },
+            { rows: 4, cols: 9, spd: 55, drop: 12, shoot: .0009, fast: 2, tank: 0 },
+            { rows: 4, cols: 10, spd: 60, drop: 12, shoot: .0011, fast: 2, tank: 1 },
+            { rows: 4, cols: 11, spd: 65, drop: 14, shoot: .0013, fast: 3, tank: 1 },
+            { rows: 5, cols: 11, spd: 70, drop: 14, shoot: .0015, fast: 3, tank: 1 },
+            { rows: 5, cols: 12, spd: 75, drop: 16, shoot: .0017, fast: 4, tank: 2 },
+            { rows: 5, cols: 13, spd: 80, drop: 16, shoot: .0019, fast: 4, tank: 2 },
+            { rows: 6, cols: 13, spd: 85, drop: 18, shoot: .0021, fast: 5, tank: 2 },
+            { rows: 6, cols: 14, spd: 90, drop: 18, shoot: .0023, fast: 6, tank: 3 },
+            { rows: 6, cols: 15, spd: 95, drop: 20, shoot: .0025, fast: 6, tank: 3 },
+            { rows: 7, cols: 14, spd: 100, drop: 20, shoot: .0028, fast: 7, tank: 3 },
+            { rows: 7, cols: 15, spd: 105, drop: 22, shoot: .0031, fast: 8, tank: 4 },
+            { rows: 7, cols: 16, spd: 110, drop: 22, shoot: .0034, fast: 9, tank: 4 },
+            { rows: 8, cols: 16, spd: 115, drop: 24, shoot: .0037, fast: 10, tank: 5 },
         ];
 
         const BAD = ['👾', '👽', '☄️', '💣', '🦠', '🔥', '👹', '🤢', '🕷️', '🦑'];
@@ -714,6 +840,7 @@
         let stormT = 0, stormActive = false, stormEnd = 0, stormNext = 0;
         let transitioning = false;
         let lastTS = 0;
+        let frameCount = 0;
 
         function resetState() {
             G = {
@@ -723,9 +850,8 @@
                 ufoActive: false, ufoX: -80, ufoDir: 1, ufoFrames: 0
             };
             tripleT = 0; shieldT = 0; bombs = 0;
-            stormT = 0; stormActive = false; transitioning = false; lastTS = 0;
+            stormT = 0; stormActive = false; transitioning = false; lastTS = 0; frameCount = 0;
             stormNext = 500 + Math.floor(Math.random()*800);
-            stopBGMusic();
         }
 
         // ===== UTILS =====
@@ -737,11 +863,31 @@
         function loadLevel(idx) {
             if (idx >= LEVELS.length) { endGame(true); return; }
             
+            // IMPORTANTE: Resetear completamente el estado del juego para cada nivel
             transitioning = false;
-            G.lvl = idx; G.dir = 1;
-            G.enemies = []; G.shots = []; G.eShots = []; G.powerups = []; G.shields = [];
-            tripleT = 0; shieldT = 0;
+            G.lvl = idx;
+            G.dir = 1;
+            G.enemies = [];
+            G.shots = [];
+            G.eShots = [];
+            G.powerups = [];
+            G.shields = [];
+            G.ufoActive = false;
+            G.ufoX = -80;
+            G.ufoFrames = 0;
+            
+            // Resetear power-ups
+            tripleT = 0;
+            shieldT = 0;
+            
+            // Resetear tormenta
             stopStorm();
+            stormT = 0;
+            stormNext = 500 + Math.floor(Math.random()*800);
+            
+            // Resetear timestamp para delta time
+            lastTS = 0;
+            frameCount = 0;
 
             const ga = document.getElementById('gameArea');
             ga.querySelectorAll('.enemy, .shot, .enemy-shot, .explosion, .pts, .shield, .powerup').forEach(e => e.remove());
@@ -751,7 +897,10 @@
             document.getElementById('powerInd').style.display = 'none';
             syncBombBtn();
 
-            show('gameArea'); hide('startScreen'); hide('lvlScreen'); hide('endScreen');
+            show('gameArea'); 
+            hide('startScreen'); 
+            hide('lvlScreen'); 
+            hide('endScreen');
             document.getElementById('levelInd').textContent = `NIVEL ${idx + 1}/16`;
 
             const mob = isMob();
@@ -765,11 +914,9 @@
             createShields();
             updateHUD();
 
-            lastTS = 0;
             G.playing = true;
             cancelAnimationFrame(rafId);
             rafId = requestAnimationFrame(loop);
-            startBGMusic();
         }
 
         // ===== ESCUDOS =====
@@ -882,7 +1029,17 @@
             b.style.left = (Math.floor(Math.random()*60) + 20) + '%';
             b.style.top = (Math.floor(Math.random()*25) + 10) + '%';
             showPts(window.innerWidth / 2, window.innerHeight * .38, '⚡ TORMENTA ⚡', 'pts-u');
-            playTone(55, .5, 'sawtooth', .25);
+            try {
+                if (sfxCtx) {
+                    const o = sfxCtx.createOscillator(), g = sfxCtx.createGain();
+                    o.connect(g); g.connect(sfxCtx.destination);
+                    o.type = 'sawtooth';
+                    o.frequency.value = 55;
+                    g.gain.setValueAtTime(0.2, sfxCtx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, sfxCtx.currentTime + 0.5);
+                    o.start(); o.stop(sfxCtx.currentTime + 0.5);
+                }
+            } catch(e) {}
         }
         
         function stopStorm() {
@@ -1023,19 +1180,26 @@
             }
         }
 
-        // ===== MAIN LOOP =====
+        // ===== MAIN LOOP - CORREGIDO =====
         function loop(ts) {
             rafId = requestAnimationFrame(loop);
             if (!G.playing || paused || transitioning) return;
 
-            if (!lastTS) lastTS = ts;
-            const dt = Math.min((ts - lastTS) / 1000, .05);
+            frameCount++;
+            
+            // CORRECCIÓN: Manejo robusto del delta time
+            if (!lastTS || lastTS === 0) {
+                lastTS = ts;
+                return; // Saltar primer frame para evitar delta enorme
+            }
+            
+            const dt = Math.min((ts - lastTS) / 1000, 0.05); // Max 50ms para evitar saltos
             lastTS = ts;
 
             const W = window.innerWidth, H = window.innerHeight;
             const mob = isMob(), pBot = mob ? 115 : 20;
             const cfg = LEVELS[G.lvl];
-            const spdMult = stormActive ? .35 : 1;
+            const spdMult = stormActive ? 0.35 : 1;
 
             // Mover jugador
             if (mL) G.px -= 280 * dt;
@@ -1043,10 +1207,12 @@
             G.px = Math.max(2, Math.min(98, G.px));
             document.getElementById('player').style.left = G.px + '%';
 
-            // Mover enemigos
+            // Mover enemigos - VELOCIDAD FIJA POR NIVEL
             let edge = false;
             G.enemies.forEach(e => {
-                e.x += cfg.spd * e.spdFactor * spdMult * G.dir * dt;
+                // Velocidad base del nivel * factor de tipo * multiplicador de tormenta * dirección
+                const moveSpeed = cfg.spd * e.spdFactor * spdMult * G.dir * dt;
+                e.x += moveSpeed;
                 const ew = parseInt(e.el.style.width);
                 if (e.x <= 3 || e.x >= W - ew - 3) edge = true;
             });
@@ -1057,12 +1223,16 @@
                     const e = G.enemies[i];
                     e.y += cfg.drop;
                     e.el.style.top = e.y + 'px';
-                    if (e.y > H - pBot - 50 && !transitioning) { endGame(false); return; }
+                    // Verificar si llegaron al fondo
+                    if (e.y > H - pBot - 50 && !transitioning) { 
+                        endGame(false); 
+                        return; 
+                    }
                 }
             }
             G.enemies.forEach(e => e.el.style.left = e.x + 'px');
 
-            // Disparo enemigo
+            // Disparo enemigo (probabilidad por frame)
             if (Math.random() < cfg.shoot * 60 * dt) {
                 const bads = G.enemies.filter(e => e.isBad);
                 if (bads.length) {
@@ -1241,7 +1411,6 @@
             transitioning = true;
             G.playing = false;
             stopStorm();
-            stopBGMusic();
             sfxLevelUp();
             
             const isLast = G.lvl >= LEVELS.length - 1;
@@ -1269,8 +1438,7 @@
             transitioning = false;
             cancelAnimationFrame(rafId);
             stopStorm();
-            stopBGMusic();
-            if (win) sfxLevelUp();
+            stopMusic();
             
             hide('gameArea');
             show('endScreen');
@@ -1287,7 +1455,12 @@
         function togglePause() {
             paused = !paused;
             document.getElementById('pauseBtn').textContent = paused ? '▶' : '⏸';
-            if (paused) stopBGMusic(); else startBGMusic();
+            if (paused) {
+                stopMusic();
+            } else {
+                startMusic();
+                lastTS = 0; // Resetear timestamp al reanudar
+            }
         }
 
         // ===== CONTROLES =====
@@ -1357,17 +1530,20 @@
             lt = n;
         }, false);
 
-        // ===== INICIO CON INICIALIZACIÓN DE AUDIO =====
+        // ===== INICIO CON INICIALIZACIÓN DE AUDIO Y MÚSICA =====
         document.getElementById('startBtn').addEventListener('click', function handler(e) {
             e.preventDefault();
             e.stopPropagation();
-            // Inicializar audio primero (requerido por políticas de autoplay)
-            initAudio();
-            // Pequeña pausa para asegurar que el contexto esté listo
+            
+            // Inicializar todo el audio
+            initSFX();
+            startMusic();
+            
+            // Pequeña pausa para asegurar que todo esté listo
             setTimeout(() => {
                 resetState();
                 loadLevel(0);
-            }, 50);
+            }, 100);
         });
     </script>
 </body>
