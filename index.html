@@ -590,43 +590,64 @@
     </div>
 
     <script>
-        // ===== WEB AUDIO API =====
+        // ===== INICIALIZACIÓN SEGURA DE AUDIO =====
         let AC = null;
+        let audioInitialized = false;
+        
+        function initAudio() {
+            if (audioInitialized) return true;
+            try {
+                AC = new (window.AudioContext || window.webkitAudioContext)();
+                if (AC.state === 'suspended') {
+                    AC.resume();
+                }
+                audioInitialized = true;
+                return true;
+            } catch(e) {
+                console.log('Audio no disponible');
+                return false;
+            }
+        }
+        
         function getAC() {
-            if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+            if (!AC) initAudio();
             return AC;
         }
         
-        function playTone(freq, dur, type = 'square', vol = .18) {
+        function playTone(freq, dur, type, vol) {
+            if (!audioInitialized) return;
             try {
                 const ac = getAC();
+                if (!ac) return;
                 const o = ac.createOscillator(), g = ac.createGain();
                 o.connect(g); g.connect(ac.destination);
-                o.type = type;
+                o.type = type || 'square';
                 o.frequency.setValueAtTime(freq, ac.currentTime);
-                g.gain.setValueAtTime(vol, ac.currentTime);
-                g.gain.exponentialRampToValueAtTime(.001, ac.currentTime + dur);
+                g.gain.setValueAtTime(vol || 0.18, ac.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + dur);
                 o.start(ac.currentTime);
                 o.stop(ac.currentTime + dur);
             } catch(e) {}
         }
 
-        function sfxShoot() { playTone(880, .08, 'square', .12); }
-        function sfxExplode() { playTone(80, .25, 'sawtooth', .22); playTone(120, .2, 'square', .1); }
-        function sfxPowerup() { playTone(520, .08, 'sine', .2); setTimeout(() => playTone(780, .1, 'sine', .2), 80); }
-        function sfxLife() { playTone(440, .1, 'sine', .2); setTimeout(() => playTone(660, .15, 'sine', .2), 100); }
-        function sfxBomb() { playTone(60, .4, 'sawtooth', .3); playTone(100, .35, 'square', .2); }
+        function sfxShoot() { playTone(880, 0.08, 'square', 0.12); }
+        function sfxExplode() { playTone(80, 0.25, 'sawtooth', 0.22); playTone(120, 0.2, 'square', 0.1); }
+        function sfxPowerup() { playTone(520, 0.08, 'sine', 0.2); setTimeout(() => playTone(780, 0.1, 'sine', 0.2), 80); }
+        function sfxLife() { playTone(440, 0.1, 'sine', 0.2); setTimeout(() => playTone(660, 0.15, 'sine', 0.2), 100); }
+        function sfxBomb() { playTone(60, 0.4, 'sawtooth', 0.3); playTone(100, 0.35, 'square', 0.2); }
         function sfxLevelUp() {
-            [262, 330, 392, 523].forEach((f, i) => setTimeout(() => playTone(f, .15, 'sine', .22), i * 100));
+            [262, 330, 392, 523].forEach((f, i) => setTimeout(() => playTone(f, 0.15, 'sine', 0.22), i * 100));
         }
-        function sfxHit() { playTone(200, .12, 'sawtooth', .2); }
+        function sfxHit() { playTone(200, 0.12, 'sawtooth', 0.2); }
 
         // Música de fondo
         let bgActive = false, bgTimer = null;
         function startBGMusic() {
             stopBGMusic();
+            if (!audioInitialized) return;
             try {
                 const ac = getAC();
+                if (!ac) return;
                 const notes = [130, 146, 164, 174, 196, 220];
                 let idx = 0;
                 function playNext() {
@@ -635,9 +656,9 @@
                     o.connect(g); g.connect(ac.destination);
                     o.type = 'triangle';
                     o.frequency.value = notes[idx % notes.length]; idx++;
-                    g.gain.setValueAtTime(.06, ac.currentTime);
-                    g.gain.exponentialRampToValueAtTime(.001, ac.currentTime + .18);
-                    o.start(ac.currentTime); o.stop(ac.currentTime + .2);
+                    g.gain.setValueAtTime(0.06, ac.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.18);
+                    o.start(ac.currentTime); o.stop(ac.currentTime + 0.2);
                     bgTimer = setTimeout(playNext, 220);
                 }
                 bgActive = true; playNext();
@@ -650,31 +671,31 @@
             const c = document.getElementById('stars');
             for (let i = 0; i < 85; i++) {
                 const s = document.createElement('div'); s.className = 'star';
-                s.style.cssText = `left:${R(100)}%;top:${R(100)}%;
+                s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;
                     width:${Math.random() < .8 ? 1 : 2}px;height:${Math.random() < .8 ? 1 : 2}px;
-                    --d:${2 + R(4)}s;--dl:-${R(4)}s`;
+                    --d:${2+Math.random()*4}s;--dl:-${Math.random()*4}s`;
                 c.appendChild(s);
             }
         })();
 
         // ===== 16 NIVELES =====
         const LEVELS = [
-            { rows: 3, cols: 7, spd: 55, drop: 12, shoot: .0005, fast: 0, tank: 0 },
-            { rows: 3, cols: 8, spd: 65, drop: 14, shoot: .0008, fast: 1, tank: 0 },
-            { rows: 3, cols: 9, spd: 75, drop: 14, shoot: .001, fast: 1, tank: 0 },
-            { rows: 4, cols: 9, spd: 85, drop: 16, shoot: .0013, fast: 2, tank: 0 },
-            { rows: 4, cols: 10, spd: 95, drop: 16, shoot: .0016, fast: 2, tank: 1 },
-            { rows: 4, cols: 11, spd: 105, drop: 18, shoot: .002, fast: 3, tank: 1 },
-            { rows: 5, cols: 11, spd: 115, drop: 18, shoot: .0023, fast: 3, tank: 1 },
-            { rows: 5, cols: 12, spd: 128, drop: 20, shoot: .0026, fast: 4, tank: 2 },
-            { rows: 5, cols: 13, spd: 140, drop: 20, shoot: .003, fast: 4, tank: 2 },
-            { rows: 6, cols: 13, spd: 155, drop: 22, shoot: .0033, fast: 5, tank: 2 },
-            { rows: 6, cols: 14, spd: 170, drop: 22, shoot: .0036, fast: 6, tank: 3 },
-            { rows: 6, cols: 15, spd: 185, drop: 24, shoot: .004, fast: 6, tank: 3 },
-            { rows: 7, cols: 14, spd: 200, drop: 24, shoot: .0045, fast: 7, tank: 3 },
-            { rows: 7, cols: 15, spd: 218, drop: 26, shoot: .005, fast: 8, tank: 4 },
-            { rows: 7, cols: 16, spd: 236, drop: 26, shoot: .0055, fast: 9, tank: 4 },
-            { rows: 8, cols: 16, spd: 258, drop: 28, shoot: .006, fast: 10, tank: 5 },
+            { rows: 3, cols: 7, spd: 45, drop: 10, shoot: .0004, fast: 0, tank: 0 },
+            { rows: 3, cols: 8, spd: 52, drop: 12, shoot: .0007, fast: 1, tank: 0 },
+            { rows: 3, cols: 9, spd: 58, drop: 12, shoot: .0009, fast: 1, tank: 0 },
+            { rows: 4, cols: 9, spd: 65, drop: 14, shoot: .0011, fast: 2, tank: 0 },
+            { rows: 4, cols: 10, spd: 72, drop: 14, shoot: .0014, fast: 2, tank: 1 },
+            { rows: 4, cols: 11, spd: 78, drop: 16, shoot: .0017, fast: 3, tank: 1 },
+            { rows: 5, cols: 11, spd: 85, drop: 16, shoot: .002, fast: 3, tank: 1 },
+            { rows: 5, cols: 12, spd: 92, drop: 18, shoot: .0023, fast: 4, tank: 2 },
+            { rows: 5, cols: 13, spd: 98, drop: 18, shoot: .0026, fast: 4, tank: 2 },
+            { rows: 6, cols: 13, spd: 105, drop: 20, shoot: .0029, fast: 5, tank: 2 },
+            { rows: 6, cols: 14, spd: 112, drop: 20, shoot: .0032, fast: 6, tank: 3 },
+            { rows: 6, cols: 15, spd: 118, drop: 22, shoot: .0035, fast: 6, tank: 3 },
+            { rows: 7, cols: 14, spd: 125, drop: 22, shoot: .004, fast: 7, tank: 3 },
+            { rows: 7, cols: 15, spd: 132, drop: 24, shoot: .0045, fast: 8, tank: 4 },
+            { rows: 7, cols: 16, spd: 138, drop: 24, shoot: .005, fast: 9, tank: 4 },
+            { rows: 8, cols: 16, spd: 145, drop: 26, shoot: .0055, fast: 10, tank: 5 },
         ];
 
         const BAD = ['👾', '👽', '☄️', '💣', '🦠', '🔥', '👹', '🤢', '🕷️', '🦑'];
@@ -703,14 +724,11 @@
             };
             tripleT = 0; shieldT = 0; bombs = 0;
             stormT = 0; stormActive = false; transitioning = false; lastTS = 0;
-            stormNext = 500 + ri(800);
+            stormNext = 500 + Math.floor(Math.random()*800);
             stopBGMusic();
         }
 
         // ===== UTILS =====
-        const R = n => Math.random() * n;
-        const ri = n => ~~(Math.random() * n);
-        const pick = a => a[ri(a.length)];
         function show(id) { document.getElementById(id).style.display = 'flex'; }
         function hide(id) { document.getElementById(id).style.display = 'none'; }
         function isMob() { return window.innerWidth < 769; }
@@ -778,7 +796,7 @@
             for (let r = 0; r < cfg.rows; r++) {
                 for (let c = 0; c < cfg.cols; c++) {
                     const isBad = Math.random() > .12;
-                    const em = isBad ? pick(BAD) : pick(GOOD);
+                    const em = isBad ? BAD[Math.floor(Math.random()*BAD.length)] : GOOD[Math.floor(Math.random()*GOOD.length)];
                     let isTank = false, isFast = false;
                     
                     if (isBad && tLeft > 0 && Math.random() > .65) { isTank = true; tLeft--; }
@@ -806,7 +824,7 @@
             const W = window.innerWidth;
             const ufo = document.getElementById('ufo');
             
-            if (!G.ufoActive && G.ufoFrames > 500 + ri(600)) {
+            if (!G.ufoActive && G.ufoFrames > 500 + Math.floor(Math.random()*600)) {
                 G.ufoActive = true;
                 G.ufoDir = Math.random() > .5 ? 1 : -1;
                 G.ufoX = G.ufoDir === 1 ? -70 : W + 70;
@@ -825,7 +843,7 @@
                 
                 const ur = ufo.getBoundingClientRect();
                 for (let i = G.shots.length - 1; i >= 0; i--) {
-                    if (collidePx(G.shots[i].el.getBoundingClientRect(), ur)) {
+                    if (collideRect(G.shots[i].el.getBoundingClientRect(), ur)) {
                         G.score += 500;
                         updateHUD();
                         sfxExplode();
@@ -850,19 +868,19 @@
             }
             if (stormActive && Date.now() > stormEnd) {
                 stopStorm();
-                stormNext = 400 + ri(1000);
+                stormNext = 400 + Math.floor(Math.random()*1000);
                 stormT = 0;
             }
         }
         
         function triggerStorm() {
             stormActive = true;
-            stormEnd = Date.now() + 2000 + ri(2500);
+            stormEnd = Date.now() + 2000 + Math.floor(Math.random()*2500);
             document.getElementById('lightning').style.display = 'block';
             const b = document.getElementById('lbolt');
             b.style.display = 'block';
-            b.style.left = ri(60) + 20 + '%';
-            b.style.top = ri(25) + 10 + '%';
+            b.style.left = (Math.floor(Math.random()*60) + 20) + '%';
+            b.style.top = (Math.floor(Math.random()*25) + 10) + '%';
             showPts(window.innerWidth / 2, window.innerHeight * .38, '⚡ TORMENTA ⚡', 'pts-u');
             playTone(55, .5, 'sawtooth', .25);
         }
@@ -876,7 +894,7 @@
         // ===== POWER-UPS =====
         function spawnPowerup(x, y) {
             if (Math.random() > .25) return;
-            const p = pick(PU);
+            const p = PU[Math.floor(Math.random()*PU.length)];
             const el = document.createElement('div');
             el.className = 'powerup';
             el.textContent = p.emoji;
@@ -901,7 +919,7 @@
                     continue;
                 }
                 
-                if (collidePx(pr, p.el.getBoundingClientRect())) {
+                if (collideRect(pr, p.el.getBoundingClientRect())) {
                     collectPU(p);
                     p.el.remove();
                     G.powerups.splice(i, 1);
@@ -1048,7 +1066,7 @@
             if (Math.random() < cfg.shoot * 60 * dt) {
                 const bads = G.enemies.filter(e => e.isBad);
                 if (bads.length) {
-                    const s = pick(bads);
+                    const s = bads[Math.floor(Math.random()*bads.length)];
                     const ew = parseInt(s.el.style.width);
                     fireEnemyShot(s.x + ew / 2, s.y + parseInt(s.el.style.height));
                 }
@@ -1102,7 +1120,7 @@
                 if (hit) continue;
                 
                 for (let k = G.shields.length - 1; k >= 0; k--) {
-                    if (G.shields[k].hp > 0 && collidePx(sh.el.getBoundingClientRect(), G.shields[k].el.getBoundingClientRect())) {
+                    if (G.shields[k].hp > 0 && collideRect(sh.el.getBoundingClientRect(), G.shields[k].el.getBoundingClientRect())) {
                         sh.el.remove();
                         G.shots.splice(i, 1);
                         damageShield(k);
@@ -1119,7 +1137,7 @@
                 
                 if (sh.y > H) { sh.el.remove(); G.eShots.splice(i, 1); continue; }
                 
-                if (shieldT > 0 && collidePx(sh.el.getBoundingClientRect(), document.getElementById('pshield').getBoundingClientRect())) {
+                if (shieldT > 0 && collideRect(sh.el.getBoundingClientRect(), document.getElementById('pshield').getBoundingClientRect())) {
                     sh.el.remove();
                     G.eShots.splice(i, 1);
                     shieldT = Math.max(0, shieldT - 70);
@@ -1138,7 +1156,7 @@
                 }
                 
                 for (let k = G.shields.length - 1; k >= 0; k--) {
-                    if (G.shields[k].hp > 0 && collidePx(sh.el.getBoundingClientRect(), G.shields[k].el.getBoundingClientRect())) {
+                    if (G.shields[k].hp > 0 && collideRect(sh.el.getBoundingClientRect(), G.shields[k].el.getBoundingClientRect())) {
                         sh.el.remove();
                         G.eShots.splice(i, 1);
                         damageShield(k);
@@ -1208,8 +1226,8 @@
         }
 
         // ===== COLISIONES =====
-        function collide(a, b) { return collidePx(a.getBoundingClientRect(), b.getBoundingClientRect()); }
-        function collidePx(r1, r2) { return !(r1.right < r2.left || r1.left > r2.right || r1.bottom < r2.top || r1.top > r2.bottom); }
+        function collide(a, b) { return collideRect(a.getBoundingClientRect(), b.getBoundingClientRect()); }
+        function collideRect(r1, r2) { return !(r1.right < r2.left || r1.left > r2.right || r1.bottom < r2.top || r1.top > r2.bottom); }
 
         // ===== HUD =====
         function updateHUD() {
@@ -1314,7 +1332,6 @@
             const fb = document.getElementById('fireBtn');
             const startF = () => {
                 fb.classList.add('pressed');
-                try { getAC().resume(); } catch(e) {}
                 playerShoot();
                 autoFireId = setInterval(playerShoot, 220);
             };
@@ -1340,8 +1357,18 @@
             lt = n;
         }, false);
 
-        // Iniciar
-        document.getElementById('startBtn').onclick = () => { resetState(); loadLevel(0); };
+        // ===== INICIO CON INICIALIZACIÓN DE AUDIO =====
+        document.getElementById('startBtn').addEventListener('click', function handler(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            // Inicializar audio primero (requerido por políticas de autoplay)
+            initAudio();
+            // Pequeña pausa para asegurar que el contexto esté listo
+            setTimeout(() => {
+                resetState();
+                loadLevel(0);
+            }, 50);
+        });
     </script>
 </body>
 </html>
