@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>👾 CADETES DEL 5to. GRADO - Desarrollado por Eliseo Espinoza</title>
+    <title>🦠 CÉLULAS DEFENSORAS: Protege tu Cuerpo - Desarrollado por Eliseo Espinoza</title>
     <style>
         * {
             margin: 0;
@@ -22,7 +22,7 @@
             font-family: 'Courier New', monospace;
         }
 
-        /* Estrellas de fondo */
+        /* Estrellas de fondo (ahora células) */
         #stars {
             position: fixed;
             inset: 0;
@@ -40,17 +40,17 @@
             50% { opacity: .9 }
         }
 
-        /* Efectos de tormenta */
+        /* Efectos de fiebre/temperatura */
         #lightning {
             position: fixed;
             inset: 0;
             z-index: 500;
             pointer-events: none;
             display: none;
-            background: linear-gradient(135deg, rgba(80,0,255,.12), rgba(0,180,255,.08));
-            animation: storm .14s infinite;
+            background: linear-gradient(135deg, rgba(255,100,100,.12), rgba(255,50,50,.08));
+            animation: fever .14s infinite;
         }
-        @keyframes storm {
+        @keyframes fever {
             0% { opacity: 0 }
             30% { opacity: 1 }
             60% { opacity: .3 }
@@ -63,17 +63,17 @@
             pointer-events: none;
             font-size: 3.5em;
             display: none;
-            animation: boltAnim .16s infinite;
+            animation: pulseAnim .16s infinite;
         }
-        @keyframes boltAnim {
-            0%, 100% { transform: rotate(-8deg) }
-            50% { transform: rotate(8deg) }
+        @keyframes pulseAnim {
+            0%, 100% { transform: rotate(-8deg) scale(1) }
+            50% { transform: rotate(8deg) scale(1.1) }
         }
         #bombFlash {
             position: fixed;
             inset: 0;
             z-index: 400;
-            background: rgba(255,180,0,.4);
+            background: rgba(255,200,100,.4);
             display: none;
             pointer-events: none;
         }
@@ -91,12 +91,12 @@
         }
 
         #startScreen {
-            background: radial-gradient(ellipse at center, #001500 0%, #000 70%);
+            background: radial-gradient(ellipse at center, #1a0015 0%, #000 70%);
             border: 3px solid #0f0;
         }
 
         #startScreen h1 {
-            font-size: clamp(1.2em, 4.5vw, 1.8em);
+            font-size: clamp(1.1em, 4vw, 1.6em);
             color: #0f0;
             text-align: center;
             margin-bottom: 4px;
@@ -243,7 +243,7 @@
             display: none;
         }
 
-        /* Jugador */
+        /* Jugador (Linfocito/Macrófago) */
         #player {
             position: fixed;
             font-size: clamp(1.7em, 5vw, 2.2em);
@@ -265,7 +265,7 @@
             pointer-events: none;
         }
 
-        /* Disparos */
+        /* Disparos (anticuerpos) */
         .shot {
             position: fixed;
             width: 3px;
@@ -290,7 +290,7 @@
             transform: translateX(-50%);
         }
 
-        /* Enemigos */
+        /* Enemigos (Patógenos) */
         .enemy {
             position: fixed;
             display: flex;
@@ -309,7 +309,7 @@
             50% { transform: rotate(6deg) }
         }
 
-        /* UFO */
+        /* Virus bonus */
         #ufo {
             position: fixed;
             font-size: 1.7em;
@@ -319,7 +319,7 @@
             display: none;
         }
 
-        /* Power-ups */
+        /* Power-ups (refuerzos inmunes) */
         .powerup {
             position: fixed;
             font-size: 1.45em;
@@ -332,7 +332,7 @@
             100% { transform: translateY(-5px) rotate(5deg) }
         }
 
-        /* Escudos */
+        /* Barreras tisulares */
         .shield {
             position: fixed;
             background: rgba(0,255,0,.1);
@@ -341,7 +341,7 @@
             z-index: 8;
         }
 
-        /* Explosiones */
+        /* Explosiones (lisado celular) */
         .explosion {
             position: fixed;
             font-size: 1.7em;
@@ -518,72 +518,71 @@
             #fireBtn { width: 65px; height: 65px; font-size: 1.3em; }
         }
     </style>
-<base target="_blank">
 </head>
 <body>
-    <!-- Estrellas -->
+    <!-- Células de fondo -->
     <div id="stars"></div>
     
-    <!-- Efectos -->
+    <!-- Efectos de fiebre -->
     <div id="lightning"></div>
-    <div id="lbolt">⚡</div>
+    <div id="lbolt">🌡️</div>
     <div id="bombFlash"></div>
 
     <!-- Pantalla inicio -->
     <div id="startScreen" class="screen">
-        <h1>👾 CADETES DEL<br>5to. GRADO 👾</h1>
-        <div class="sub">▸ 16 NIVELES · POWER-UPS · TORMENTA ◂</div>
+        <h1>🦠 CÉLULAS DEFENSORAS<br>Protege tu Cuerpo</h1>
+        <div class="sub">▸ 16 NIVELES · SISTEMA INMUNE · EDUCATIVO ◂</div>
         <div class="dev">Desarrollado por Eliseo Espinoza</div>
         
         <div class="box">
             <h3>[ INSTRUCCIONES ]</h3>
-            <div class="rule" style="color:#0f0;">▸ Malos destruidos: <b>+100</b> | Tanques: <b>+200</b></div>
-            <div class="rule" style="color:#f44;">▸ Amigos destruidos: <b>−50 pts</b></div>
-            <div class="rule" style="color:#f0f;">▸ OVNI: <b>+500 pts</b></div>
-            <div class="rule" style="color:#ff0;margin-top:5px;"><b>⬇ POWER-UPS (recoge con tu nave)</b></div>
+            <div class="rule" style="color:#f44;">▸ <b>DESTRUYE:</b> Bacterias 🦠, Virus 🧬, Hongos 🍄, Parásitos 🪱</div>
+            <div class="rule" style="color:#0f0;">▸ <b>PROTEGE:</b> Células sanas ❤️, Glóbulos rojos 🩸, Neuronas 🧠</div>
+            <div class="rule" style="color:#f0f;">▸ <b>VIRUS MUTADO:</b> +500 pts (aparece rápido)</div>
+            <div class="rule" style="color:#ff0;margin-top:5px;"><b>⬇ REFUERZOS INMUNES</b></div>
             <div class="pu-row">
-                <span class="pu-badge">⚡ Disparo triple</span>
-                <span class="pu-badge">🛡️ Escudo personal</span>
-                <span class="pu-badge">💊 Vida extra</span>
-                <span class="pu-badge">💣 Bomba total</span>
+                <span class="pu-badge">⚡ Triple anticuerpo</span>
+                <span class="pu-badge">🛡️ Barrera protectora</span>
+                <span class="pu-badge">💊 Vitamina C (+vida)</span>
+                <span class="pu-badge">💉 Vacuna (elimina todo)</span>
             </div>
-            <div class="rule" style="color:#0af;">▸ Tormenta: ralentiza enemigos</div>
+            <div class="rule" style="color:#0af;">▸ Fiebre: ralentiza patógenos</div>
             <div class="rule" style="color:#888;font-size:.72em;margin-top:4px;">
-                Teclado: ←→ mover · Espacio disparar · B bomba · P pausa
+                Teclado: ←→ mover · Espacio atacar · B vacuna · P pausa
             </div>
         </div>
         
-        <button class="start-btn" id="startBtn">► INICIAR JUEGO</button>
+        <button class="start-btn" id="startBtn">► INICIAR DEFENSA</button>
     </div>
 
-    <!-- Pantalla nivel completado CON BOTÓN -->
+    <!-- Pantalla nivel completado -->
     <div id="lvlScreen" class="screen">
-        <h2 id="lvlTitle">🎉 ¡NIVEL COMPLETADO! 🎉</h2>
-        <p id="lvlScoreText">Puntuación:</p>
+        <h2 id="lvlTitle">🎉 ¡INFECCIÓN CONTROLADA! 🎉</h2>
+        <p id="lvlScoreText">Inmunidad acumulada:</p>
         <p id="lvlScoreBig">0</p>
         <p id="lvlNextNum">Siguiente: Nivel 2</p>
-        <button class="continue-btn" id="continueBtn">▶ NIVEL SUPERADO - CONTINUAR</button>
+        <button class="continue-btn" id="continueBtn">▶ CONTINUAR DEFENSA</button>
     </div>
 
     <!-- Área juego -->
     <div id="gameArea">
         <div id="hud">
-            <div id="lives">VIDAS: ❤️❤️❤️</div>
-            <div id="score">PUNTOS: 0</div>
-            <div id="levelInd">NIVEL 1/16</div>
+            <div id="lives">❤️ SALUD: 100%</div>
+            <div id="score">INMUNIDAD: 0</div>
+            <div id="levelInd">ZONA 1/16</div>
         </div>
         
-        <div id="powerInd">⚡ DISPARO TRIPLE</div>
+        <div id="powerInd">⚡ TRIPLE ANTICUERPO</div>
         <button id="pauseBtn" onclick="togglePause()">⏸</button>
-        <button id="bombBtn" onclick="useBomb()">💣×0</button>
+        <button id="bombBtn" onclick="useBomb()">💉×0</button>
         
-        <div id="player">🛸</div>
+        <div id="player">🛡️</div>
         <div id="pshield"></div>
-        <div id="ufo">🛸</div>
+        <div id="ufo">🧬</div>
 
         <!-- Controles móviles -->
         <div id="mobileControls">
-            <div id="fireBtn">💥</div>
+            <div id="fireBtn">🎯</div>
             <div class="arrows">
                 <div class="arrow-btn" id="leftBtn">◀</div>
                 <div class="arrow-btn" id="rightBtn">▶</div>
@@ -593,10 +592,10 @@
 
     <!-- Pantalla final -->
     <div id="endScreen" class="screen">
-        <h2 id="endTitle">💀 GAME OVER 💀</h2>
+        <h2 id="endTitle">💀 SISTEMA COLAPSADO 💀</h2>
         <div id="finalScore">0</div>
         <div class="stats" id="finalStats"></div>
-        <button class="game-btn" onclick="location.reload()">🔄 JUGAR DE NUEVO</button>
+        <button class="game-btn" onclick="location.reload()">🔄 NUEVA DEFENSA</button>
         <div class="dev" style="margin-top:14px;">Desarrollado por Eliseo Espinoza</div>
     </div>
 
@@ -647,7 +646,6 @@
                 
                 playNote();
                 
-                // Bajo
                 function playBass() {
                     if (!musicEnabled || !bgMusic) return;
                     
@@ -813,33 +811,36 @@
             }
         })();
 
-        // ===== 16 NIVELES =====
+        // ===== 16 NIVELES (ZONAS DEL CUERPO) =====
         const LEVELS = [
-            { rows: 3, cols: 7, spd: 40, drop: 8, shoot: .0003, fast: 0, tank: 0 },
-            { rows: 3, cols: 8, spd: 45, drop: 10, shoot: .0005, fast: 1, tank: 0 },
-            { rows: 3, cols: 9, spd: 50, drop: 10, shoot: .0007, fast: 1, tank: 0 },
-            { rows: 4, cols: 9, spd: 55, drop: 12, shoot: .0009, fast: 2, tank: 0 },
-            { rows: 4, cols: 10, spd: 60, drop: 12, shoot: .0011, fast: 2, tank: 1 },
-            { rows: 4, cols: 11, spd: 65, drop: 14, shoot: .0013, fast: 3, tank: 1 },
-            { rows: 5, cols: 11, spd: 70, drop: 14, shoot: .0015, fast: 3, tank: 1 },
-            { rows: 5, cols: 12, spd: 75, drop: 16, shoot: .0017, fast: 4, tank: 2 },
-            { rows: 5, cols: 13, spd: 80, drop: 16, shoot: .0019, fast: 4, tank: 2 },
-            { rows: 6, cols: 13, spd: 85, drop: 18, shoot: .0021, fast: 5, tank: 2 },
-            { rows: 6, cols: 14, spd: 90, drop: 18, shoot: .0023, fast: 6, tank: 3 },
-            { rows: 6, cols: 15, spd: 95, drop: 20, shoot: .0025, fast: 6, tank: 3 },
-            { rows: 7, cols: 14, spd: 100, drop: 20, shoot: .0028, fast: 7, tank: 3 },
-            { rows: 7, cols: 15, spd: 105, drop: 22, shoot: .0031, fast: 8, tank: 4 },
-            { rows: 7, cols: 16, spd: 110, drop: 22, shoot: .0034, fast: 9, tank: 4 },
-            { rows: 8, cols: 16, spd: 115, drop: 24, shoot: .0037, fast: 10, tank: 5 },
+            { rows: 3, cols: 7, spd: 35, drop: 8, shoot: .0003, fast: 0, tank: 0, name: "Piel" },
+            { rows: 3, cols: 8, spd: 40, drop: 10, shoot: .0005, fast: 1, tank: 0, name: "Mucosas" },
+            { rows: 3, cols: 9, spd: 45, drop: 10, shoot: .0007, fast: 1, tank: 0, name: "Boca" },
+            { rows: 4, cols: 9, spd: 50, drop: 12, shoot: .0009, fast: 2, tank: 0, name: "Garganta" },
+            { rows: 4, cols: 10, spd: 55, drop: 12, shoot: .0011, fast: 2, tank: 1, name: "Tráquea" },
+            { rows: 4, cols: 11, spd: 60, drop: 14, shoot: .0013, fast: 3, tank: 1, name: "Bronquios" },
+            { rows: 5, cols: 11, spd: 65, drop: 14, shoot: .0015, fast: 3, tank: 1, name: "Pulmones" },
+            { rows: 5, cols: 12, spd: 70, drop: 16, shoot: .0017, fast: 4, tank: 2, name: "Estómago" },
+            { rows: 5, cols: 13, spd: 75, drop: 16, shoot: .0019, fast: 4, tank: 2, name: "Intestinos" },
+            { rows: 6, cols: 13, spd: 80, drop: 18, shoot: .0021, fast: 5, tank: 2, name: "Hígado" },
+            { rows: 6, cols: 14, spd: 85, drop: 18, shoot: .0023, fast: 6, tank: 3, name: "Riñones" },
+            { rows: 6, cols: 15, spd: 90, drop: 20, shoot: .0025, fast: 6, tank: 3, name: "Sangre" },
+            { rows: 7, cols: 14, spd: 95, drop: 20, shoot: .0028, fast: 7, tank: 3, name: "Músculos" },
+            { rows: 7, cols: 15, spd: 100, drop: 22, shoot: .0031, fast: 8, tank: 4, name: "Huesos" },
+            { rows: 7, cols: 16, spd: 105, drop: 22, shoot: .0034, fast: 9, tank: 4, name: "Cerebro" },
+            { rows: 8, cols: 16, spd: 110, drop: 24, shoot: .0037, fast: 10, tank: 5, name: "Corazón" },
         ];
 
-        const BAD = ['👾', '👽', '☄️', '💣', '🦠', '🔥', '👹', '🤢', '🕷️', '🦑'];
-        const GOOD = ['🚀', '⭐', '✨', '🌟', '💫', '🪐', '🌈', '🦋', '🐬', '🌺'];
+        // PATÓGENOS (malos)
+        const PATHOGENS = ['🦠', '🧬', '🦠', '🍄', '🪱', '🦠', '🧫', '🦟', '🐛', '🦠'];
+        // CÉLULAS SANAS (buenos - NO destruir)
+        const HEALTHY_CELLS = ['❤️', '🩸', '🧠', '💪', '🦴', '👁️', '🫁', '🫀', '🧬', '🧪'];
+        
         const PU = [
-            { emoji: '⚡', type: 'triple', color: '#ff0', label: '⚡ DISPARO TRIPLE' },
-            { emoji: '🛡️', type: 'shield', color: '#0af', label: '🛡️ ESCUDO' },
-            { emoji: '💊', type: 'life', color: '#f44', label: '💊 +VIDA' },
-            { emoji: '💣', type: 'bomb', color: '#f80', label: '💣 BOMBA' },
+            { emoji: '⚡', type: 'triple', color: '#ff0', label: '⚡ TRIPLE ANTICUERPO' },
+            { emoji: '🛡️', type: 'shield', color: '#0af', label: '🛡️ BARRERA PROTECTORA' },
+            { emoji: '💊', type: 'life', color: '#f44', label: '💊 VITAMINA C' },
+            { emoji: '💉', type: 'bomb', color: '#f80', label: '💉 VACUNA' },
         ];
 
         // ===== STATE =====
@@ -849,7 +850,7 @@
         let stormT = 0, stormActive = false, stormEnd = 0, stormNext = 0;
         let transitioning = false;
         let lastTS = 0;
-        let nextLevelIndex = 0; // Para guardar el siguiente nivel
+        let nextLevelIndex = 0;
 
         function resetState() {
             G = {
@@ -875,7 +876,7 @@
         }
         function isMob() { return window.innerWidth < 769; }
 
-        // ===== DETENER JUEGO COMPLETAMENTE =====
+        // ===== DETENER JUEGO =====
         function stopGameLoop() {
             G.playing = false;
             cancelAnimationFrame(rafId);
@@ -887,14 +888,11 @@
         function loadLevel(idx) {
             if (idx >= LEVELS.length) { endGame(true); return; }
             
-            // Detener todo primero
             stopGameLoop();
             stopStorm();
             
-            // Guardar índice
             nextLevelIndex = idx + 1;
             
-            // Resetear estado completo
             transitioning = false;
             G.lvl = idx;
             G.dir = 1;
@@ -912,7 +910,6 @@
             stormT = 0;
             stormNext = 500 + Math.floor(Math.random()*800);
 
-            // Limpiar DOM
             const ga = document.getElementById('gameArea');
             if (ga) {
                 ga.querySelectorAll('.enemy, .shot, .enemy-shot, .explosion, .pts, .shield, .powerup').forEach(e => e.remove());
@@ -929,14 +926,13 @@
             
             syncBombBtn();
 
-            // Mostrar pantalla de juego
             show('gameArea'); 
             hide('startScreen'); 
             hide('lvlScreen'); 
             hide('endScreen');
             
             const levelInd = document.getElementById('levelInd');
-            if (levelInd) levelInd.textContent = `NIVEL ${idx + 1}/16`;
+            if (levelInd) levelInd.textContent = `${LEVELS[idx].name} ${idx + 1}/16`;
 
             const mob = isMob();
             const pl = document.getElementById('player');
@@ -951,13 +947,12 @@
             createShields();
             updateHUD();
 
-            // Iniciar loop limpio
             G.playing = true;
             lastTS = 0;
             rafId = requestAnimationFrame(loop);
         }
 
-        // ===== ESCUDOS =====
+        // ===== ESCUDOS (BARRERAS TISULARES) =====
         function createShields() {
             const mob = isMob(), bot = mob ? 160 : 60;
             const W = window.innerWidth;
@@ -970,7 +965,7 @@
             });
         }
 
-        // ===== ENEMIGOS =====
+        // ===== ENEMIGOS (PATÓGENOS Y CÉLULAS SANAS) =====
         function createEnemies(cfg) {
             const W = window.innerWidth;
             const sz = Math.min(35, (W - 40) / cfg.cols);
@@ -980,30 +975,35 @@
 
             for (let r = 0; r < cfg.rows; r++) {
                 for (let c = 0; c < cfg.cols; c++) {
-                    const isBad = Math.random() > .12;
-                    const em = isBad ? BAD[Math.floor(Math.random()*BAD.length)] : GOOD[Math.floor(Math.random()*GOOD.length)];
+                    // 85% patógenos, 15% células sanas
+                    const isPathogen = Math.random() > .15;
+                    const emoji = isPathogen ? 
+                        PATHOGENS[Math.floor(Math.random()*PATHOGENS.length)] : 
+                        HEALTHY_CELLS[Math.floor(Math.random()*HEALTHY_CELLS.length)];
+                    
                     let isTank = false, isFast = false;
                     
-                    if (isBad && tLeft > 0 && Math.random() > .65) { isTank = true; tLeft--; }
+                    if (isPathogen && tLeft > 0 && Math.random() > .65) { isTank = true; tLeft--; }
                     else if (fLeft > 0 && Math.random() > .5) { isFast = true; fLeft--; }
                     
                     const el = document.createElement('div');
-                    el.className = `enemy ${isBad ? 'bad' : 'good'}${isFast ? ' fast' : ''}${isTank ? ' tank' : ''}`;
-                    el.textContent = isTank ? '🤖' : em;
+                    el.className = `enemy ${isPathogen ? 'bad' : 'good'}${isFast ? ' fast' : ''}${isTank ? ' tank' : ''}`;
+                    // Super patógeno (resistente a antibióticos)
+                    el.textContent = isTank ? '🦠' : emoji;
                     const esz = isTank ? sz * 1.15 : sz;
                     el.style.cssText = `left:${sx + c * sp}px;top:${54 + r * sp}px;width:${esz}px;height:${esz}px;font-size:${esz * .78}px;`;
                     document.getElementById('gameArea').appendChild(el);
                     
                     G.enemies.push({
                         el, x: sx + c * sp, y: 54 + r * sp,
-                        isBad, isFast, isTank, hp: isTank ? 2 : 1,
+                        isBad: isPathogen, isFast, isTank, hp: isTank ? 2 : 1,
                         spdFactor: isFast ? 1.35 : 1
                     });
                 }
             }
         }
 
-        // ===== UFO =====
+        // ===== VIRUS MUTADO (BONUS) =====
         function tickUfo(dt) {
             G.ufoFrames++;
             const W = window.innerWidth;
@@ -1044,7 +1044,7 @@
             }
         }
 
-        // ===== TORMENTA =====
+        // ===== FIEBRE (ralentiza patógenos) =====
         function tickStorm(dt) {
             if (paused) return;
             stormT += dt * 60;
@@ -1066,7 +1066,7 @@
             b.style.display = 'block';
             b.style.left = (Math.floor(Math.random()*60) + 20) + '%';
             b.style.top = (Math.floor(Math.random()*25) + 10) + '%';
-            showPts(window.innerWidth / 2, window.innerHeight * .38, '⚡ TORMENTA ⚡', 'pts-u');
+            showPts(window.innerWidth / 2, window.innerHeight * .38, '🌡️ FIEBRE ACTIVADA 🌡️', 'pts-u');
         }
         
         function stopStorm() {
@@ -1077,7 +1077,7 @@
             if (lbolt) lbolt.style.display = 'none';
         }
 
-        // ===== POWER-UPS =====
+        // ===== REFUERZOS INMUNES =====
         function spawnPowerup(x, y) {
             if (Math.random() > .25) return;
             const p = PU[Math.floor(Math.random()*PU.length)];
@@ -1120,23 +1120,23 @@
             switch (p.type) {
                 case 'triple':
                     tripleT = 600;
-                    showPowerInd('⚡ DISPARO TRIPLE', '#ff0');
+                    showPowerInd('⚡ TRIPLE ANTICUERPO', '#ff0');
                     showPts(cx, cy, '⚡ TRIPLE', 'pts-p');
                     break;
                 case 'shield':
                     shieldT = 550;
                     document.getElementById('pshield').style.display = 'block';
-                    showPts(cx, cy, '🛡️ ESCUDO', 'pts-p');
+                    showPts(cx, cy, '🛡️ BARRERA', 'pts-p');
                     break;
                 case 'life':
                     if (G.lives < 6) { G.lives++; updateHUD(); }
                     sfxLife();
-                    showPts(cx, cy, '💊 +VIDA', 'pts-p');
+                    showPts(cx, cy, '💊 VITAMINA C', 'pts-p');
                     break;
                 case 'bomb':
                     bombs++;
                     syncBombBtn();
-                    showPts(cx, cy, '💣 BOMBA', 'pts-p');
+                    showPts(cx, cy, '💉 VACUNA', 'pts-p');
                     break;
             }
         }
@@ -1152,7 +1152,7 @@
         function syncBombBtn() {
             const b = document.getElementById('bombBtn');
             b.style.display = bombs > 0 ? 'block' : 'none';
-            b.textContent = `💣×${bombs}`;
+            b.textContent = `💉×${bombs}`;
         }
 
         function useBomb() {
@@ -1180,7 +1180,7 @@
                 }
             }
             updateHUD();
-            showPts(window.innerWidth / 2, window.innerHeight * .4, `💣 ×${killed}`, 'pts-p');
+            showPts(window.innerWidth / 2, window.innerHeight * .4, `💉 ×${killed}`, 'pts-p');
             if (!transitioning && G.enemies.filter(e => e.isBad).length === 0) levelDone();
         }
 
@@ -1217,7 +1217,6 @@
             
             if (paused || transitioning) return;
 
-            // Delta time
             if (!lastTS) {
                 lastTS = ts;
                 return;
@@ -1231,13 +1230,13 @@
             const cfg = LEVELS[G.lvl];
             const spdMult = stormActive ? 0.35 : 1;
 
-            // Mover jugador
+            // Mover jugador (linfocito)
             if (mL) G.px -= 280 * dt;
             if (mR) G.px += 280 * dt;
             G.px = Math.max(2, Math.min(98, G.px));
             document.getElementById('player').style.left = G.px + '%';
 
-            // Mover enemigos
+            // Mover patógenos
             let edge = false;
             G.enemies.forEach(e => {
                 const moveSpeed = cfg.spd * e.spdFactor * spdMult * G.dir * dt;
@@ -1260,7 +1259,7 @@
             }
             G.enemies.forEach(e => e.el.style.left = e.x + 'px');
 
-            // Disparo enemigo
+            // Disparo enemigo (toxinas)
             if (Math.random() < cfg.shoot * 60 * dt) {
                 const bads = G.enemies.filter(e => e.isBad);
                 if (bads.length) {
@@ -1270,7 +1269,7 @@
                 }
             }
 
-            // Disparos jugador
+            // Anticuerpos (disparos jugador)
             for (let i = G.shots.length - 1; i >= 0; i--) {
                 const sh = G.shots[i];
                 sh.y -= 450 * dt;
@@ -1291,11 +1290,13 @@
                         } else {
                             sfxExplode();
                             if (en.isBad) {
+                                // Destruir patógeno = puntos
                                 const pts = en.isTank ? 200 : 100;
                                 G.score += pts;
                                 G.destroyed++;
                                 showPts(en.x, en.y, '+' + pts, 'pts-g');
                             } else {
+                                // Destruir célula sana = penalización
                                 G.score = Math.max(0, G.score - 50);
                                 G.goodHit++;
                                 showPts(en.x, en.y, '−50', 'pts-b');
@@ -1327,7 +1328,7 @@
                 }
             }
 
-            // Disparos enemigos
+            // Toxinas (disparos enemigos)
             for (let i = G.eShots.length - 1; i >= 0; i--) {
                 const sh = G.eShots[i];
                 sh.y += 200 * dt;
@@ -1376,7 +1377,7 @@
             else sh.el.remove();
         }
 
-        // ===== DISPAROS =====
+        // ===== DISPAROS (ANTICUERPOS) =====
         function playerShoot() {
             if (!G.playing || paused || transitioning) return;
             if (G.shots.length >= 4) return;
@@ -1429,44 +1430,41 @@
 
         // ===== HUD =====
         function updateHUD() {
-            document.getElementById('lives').textContent = `VIDAS: ${'❤️'.repeat(Math.max(0, G.lives))}${'🖤'.repeat(Math.max(0, 3 - G.lives))}`;
-            document.getElementById('score').textContent = `PUNTOS: ${G.score}`;
+            const healthPercent = Math.max(0, G.lives * 33.33);
+            document.getElementById('lives').textContent = `❤️ SALUD: ${healthPercent.toFixed(0)}%`;
+            document.getElementById('score').textContent = `INMUNIDAD: ${G.score}`;
         }
 
-        // ===== NIVEL COMPLETADO - CON BOTÓN =====
+        // ===== NIVEL COMPLETADO =====
         function levelDone() {
             if (transitioning) return;
             transitioning = true;
             
-            // Detener el juego completamente
             stopGameLoop();
             stopStorm();
             sfxLevelUp();
             
             const isLast = G.lvl >= LEVELS.length - 1;
             
-            // Configurar pantalla de nivel completado
             const lvlScreen = document.getElementById('lvlScreen');
             const lvlTitle = document.getElementById('lvlTitle');
-            const lvlScoreBig = document.getElementById('lvlScoreBig');
             const lvlNextNum = document.getElementById('lvlNextNum');
             const continueBtn = document.getElementById('continueBtn');
             
             if (isLast) {
-                lvlTitle.textContent = '🏆 ¡MISIÓN CUMPLIDA! 🏆';
-                lvlNextNum.textContent = '¡Has completado todos los niveles!';
+                lvlTitle.textContent = '🏆 ¡CUERPO SANO! 🏆';
+                lvlNextNum.textContent = '¡Todas las infecciones controladas!';
                 continueBtn.textContent = '▶ VER RESULTADOS';
-                nextLevelIndex = 99; // Marcador especial para victoria
+                nextLevelIndex = 99;
             } else {
-                lvlTitle.textContent = '🎉 ¡NIVEL COMPLETADO! 🎉';
-                lvlNextNum.textContent = `Siguiente: Nivel ${G.lvl + 2}`;
-                continueBtn.textContent = '▶ NIVEL SUPERADO - CONTINUAR';
+                lvlTitle.textContent = `🎉 ¡${LEVELS[G.lvl].name} DESINFECTADO! 🎉`;
+                lvlNextNum.textContent = `Siguiente: ${LEVELS[G.lvl + 1].name}`;
+                continueBtn.textContent = '▶ CONTINUAR DEFENSA';
                 nextLevelIndex = G.lvl + 1;
             }
             
-            lvlScoreBig.textContent = G.score;
+            document.getElementById('lvlScoreBig').textContent = G.score;
             
-            // Mostrar pantalla
             show('lvlScreen');
         }
 
@@ -1479,13 +1477,13 @@
             
             hide('gameArea');
             show('endScreen');
-            document.getElementById('endTitle').textContent = win ? '🏆 ¡VICTORIA TOTAL! 🏆' : '💀 GAME OVER 💀';
+            document.getElementById('endTitle').textContent = win ? '🏆 ¡SISTEMA INMUNE VICTORIOSO! 🏆' : '💀 INFECCIÓN GENERALIZADA 💀';
             document.getElementById('endTitle').style.color = win ? '#0f0' : '#f44';
-            document.getElementById('finalScore').textContent = G.score;
+            document.getElementById('finalScore').textContent = `INMUNIDAD: ${G.score}`;
             document.getElementById('finalStats').innerHTML = 
-                `Niveles completados: ${G.lvl}/16<br>
-                 Enemigos destruidos: ${G.destroyed}<br>
-                 Aliados destruidos: ${G.goodHit}`;
+                `Zonas desinfectadas: ${G.lvl}/16<br>
+                 Patógenos eliminados: ${G.destroyed}<br>
+                 Células sanas dañadas: ${G.goodHit}`;
         }
 
         // ===== PAUSA =====
@@ -1502,7 +1500,6 @@
 
         // ===== CONTROLES =====
         function setupControls() {
-            // Teclado
             document.addEventListener('keydown', e => {
                 if (e.code === 'Space') { e.preventDefault(); playerShoot(); }
                 if (e.key === 'ArrowLeft' || e.key === 'a') mL = true;
@@ -1516,7 +1513,6 @@
                 if (e.key === 'ArrowRight' || e.key === 'd') mR = false;
             });
 
-            // Touch helpers
             function press(el, on, off) {
                 ['touchstart', 'mousedown'].forEach(ev =>
                     el.addEventListener(ev, e => {
@@ -1534,11 +1530,9 @@
                     }, { passive: false }));
             }
 
-            // Flechas
             press(document.getElementById('leftBtn'), () => mL = true, () => mL = false);
             press(document.getElementById('rightBtn'), () => mR = true, () => mR = false);
 
-            // Fuego con auto-fire
             const fb = document.getElementById('fireBtn');
             const startF = () => {
                 fb.classList.add('pressed');
@@ -1581,7 +1575,7 @@
             }, 100);
         });
 
-        // ===== BOTÓN CONTINUAR NIVEL =====
+        // ===== BOTÓN CONTINUAR =====
         document.getElementById('continueBtn').addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -1589,10 +1583,8 @@
             hide('lvlScreen');
             
             if (nextLevelIndex === 99) {
-                // Victoria total
                 endGame(true);
             } else {
-                // Cargar siguiente nivel
                 loadLevel(nextLevelIndex);
             }
         });
