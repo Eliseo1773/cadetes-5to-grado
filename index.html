@@ -3,182 +3,161 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>👾 CADETES SPACE INVADERS</title>
+<title>🛡️ DEFENSOR DEL CUERPO HUMANO</title>
 <style>
-/* --- ESTILOS OPTIMIZADOS --- */
 *{margin:0;padding:0;box-sizing:border-box;touch-action:none;user-select:none;-webkit-user-select:none;}
-html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Courier New',monospace;position:fixed;}
-#stars{position:fixed;inset:0;z-index:0;pointer-events:none;}
-.star{position:absolute;background:#fff;border-radius:50%;animation:twinkle var(--d) infinite var(--dl);}
-@keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.9}}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Segoe UI',Tahoma,sans-serif;position:fixed;}
 
-/* Efecto de sacudida */
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none; background: radial-gradient(circle, #200 0%, #000 100%);}
+.cell{position:absolute;background:rgba(255,100,100,0.1);border-radius:50%;pointer-events:none;}
+
 .shake { animation: shake 0.2s ease-in-out; }
 @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
 
-#lightning{position:fixed;inset:0;z-index:500;pointer-events:none;display:none;background:rgba(255,255,255,0.1);animation:storm .1s infinite;}
-@keyframes storm{0%,100%{opacity:0}50%{opacity:1}}
-#bombFlash{position:fixed;inset:0;z-index:400;background:#fff;display:none;pointer-events:none;}
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:200;padding:20px;background:rgba(0,0,0,0.9);}
+#startScreen{background:radial-gradient(circle,#400 0%,#000 80%);}
+h1{font-size:clamp(1.2em, 6vw, 2.5em);color:#ff4d4d;text-align:center;text-shadow:0 0 15px #f00;margin-bottom:10px;}
 
-.screen{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:200;padding:20px;background:#000;}
-#startScreen{background:radial-gradient(circle,#002200 0%,#000 80%);}
-h1{font-size:clamp(1.2em, 6vw, 2.5em);color:#0f0;text-align:center;text-shadow:0 0 15px #0f0;margin-bottom:10px;}
+.box{border:2px solid #ff4d4d;padding:15px;background:rgba(255,0,0,0.1);width:100%;max-width:400px;text-align:center;border-radius:10px;color:#fff;}
+.pu-badge{background:#300;border:1px solid #f00;padding:4px 8px;font-size:0.7em;display:inline-block;margin:3px;border-radius:4px;}
 
-.box{border:2px solid #0f0;padding:15px;background:rgba(0,255,0,0.05);width:100%;max-width:400px;text-align:center;border-radius:10px;}
-.pu-badge{background:#111;border:1px solid #444;padding:4px 8px;font-size:0.7em;color:#fff;display:inline-block;margin:3px;border-radius:4px;}
-
-.start-btn{background:#0f0;color:#000;border:none;padding:15px 40px;font-size:1.2em;font-weight:bold;cursor:pointer;margin-top:20px;border-radius:50px;box-shadow:0 0 20px #0f0;}
+.start-btn{background:#ff4d4d;color:#fff;border:none;padding:15px 40px;font-size:1.2em;font-weight:bold;cursor:pointer;margin-top:20px;border-radius:50px;box-shadow:0 0 20px #f00;}
 
 #gameArea{position:fixed;inset:0;display:none;z-index:10;}
-#hud{position:fixed;top:0;left:0;right:0;height:50px;display:flex;justify-content:space-between;align-items:center;color:#0f0;font-size:0.8em;z-index:50;background:rgba(0,0,0,0.85);padding:0 15px;border-bottom:1px solid #0f0;}
+#hud{position:fixed;top:0;left:0;right:0;height:50px;display:flex;justify-content:space-between;align-items:center;color:#ff4d4d;font-size:0.8em;z-index:50;background:rgba(20,0,0,0.9);padding:0 15px;border-bottom:2px solid #f00;}
 
-#player{position:fixed;font-size:2.2em;z-index:20;transform:translateX(-50%);bottom:110px;}
-.shot{position:fixed;width:4px;height:15px;background:#0f0;box-shadow:0 0 8px #0f0;}
-.enemy-shot{position:fixed;width:4px;height:12px;background:#f44;}
-.enemy{position:fixed;font-size:1.6em;transition: opacity 0.1s;}
+#player{position:fixed;font-size:2.5em;z-index:20;transform:translateX(-50%);bottom:130px;filter: drop-shadow(0 0 10px #fff);}
+.shot{position:fixed;width:6px;height:15px;background:#fff;border-radius:3px;box-shadow:0 0 10px #0af;}
+.enemy-shot{position:fixed;width:4px;height:12px;background:#0f0;box-shadow:0 0 8px #0f0;}
+.enemy{position:fixed;font-size:1.8em;z-index:5;}
 
-/* Controles Móviles */
-#mobileControls{position:fixed;bottom:20px;left:0;right:0;display:flex;justify-content:space-between;padding:0 25px;z-index:300;}
-.arrow-btn{width:70px;height:70px;background:rgba(0,255,0,0.1);border:2px solid #0f0;border-radius:15px;color:#0f0;font-size:2em;display:flex;justify-content:center;align-items:center;}
-#fireBtn{width:85px;height:85px;background:rgba(255,0,0,0.2);border:3px solid #f44;border-radius:50%;color:#f44;font-size:2em;display:flex;justify-content:center;align-items:center;}
+/* CONTROLES INVERTIDOS */
+#mobileControls{position:fixed;bottom:30px;left:0;right:0;display:flex;justify-content:space-between;padding:0 25px;z-index:300;}
+#fireBtn{width:90px;height:90px;background:rgba(0,150,255,0.3);border:3px solid #0af;border-radius:50%;color:#0af;font-size:2em;display:flex;justify-content:center;align-items:center;}
+.arrows{display:flex;gap:15px;}
+.arrow-btn{width:75px;height:75px;background:rgba(255,255,255,0.1);border:2px solid #fff;border-radius:15px;color:#fff;font-size:2em;display:flex;justify-content:center;align-items:center;}
 
-@media(min-width:769px){#mobileControls{display:none;} #player{bottom:30px;}}
+@media(min-width:769px){#mobileControls{display:none;} #player{bottom:40px;}}
 </style>
 </head>
 <body>
 
 <div id="stars"></div>
-<div id="lightning"></div>
-<div id="bombFlash"></div>
 
 <div id="startScreen" class="screen">
-    <h1>👾 CADETES ESPACIALES</h1>
-    <div style="color:#0a0; margin-bottom:10px;">¡Protejan su escuela!</div>
+    <h1>🛡️ SISTEMA INMUNE</h1>
+    <div style="color:#ffa0a0; margin-bottom:10px; text-align:center;">¡Alumnos, defiendan el cuerpo de las bacterias!</div>
     <div class="box">
-        <div class="pu-badge">⚡ Triple</div>
-        <div class="pu-badge">🛡️ Escudo</div>
-        <div class="pu-badge">💊 +Vida</div>
-        <div class="pu-badge">💣 Bomba</div>
-        <p style="color:#888; font-size:0.7em; margin-top:10px;">Usa flechas o botones en pantalla</p>
+        <p style="margin-bottom:10px;">Eres un <b>Glóbulo Blanco</b>.</p>
+        <div class="pu-badge">⚡ Anticuerpos</div>
+        <div class="pu-badge">🛡️ Membrana</div>
+        <div class="pu-badge">💊 Vitaminas</div>
+        <p style="color:#ddd; font-size:0.8em; margin-top:10px;">Derrota a los patógenos para subir de nivel.</p>
     </div>
-    <button class="start-btn" id="startBtn">DESPEGAR 🚀</button>
+    <button class="start-btn" id="startBtn">INICIAR DEFENSA 🛡️</button>
 </div>
 
 <div id="gameArea">
     <div id="hud">
-        <div id="lives">VIDAS: ❤️❤️❤️</div>
-        <div id="score">PTS: 0</div>
+        <div id="lives">SALUD: ❤️❤️❤️</div>
+        <div id="score">ANTIGENOS: 0</div>
         <div id="levelInd">NIVEL 1</div>
     </div>
-    <div id="player">🛸</div>
+    <div id="player">🛡️</div>
     <div id="mobileControls">
-        <div style="display:flex; gap:15px;">
+        <div id="fireBtn">⚡</div>
+        <div class="arrows">
             <div class="arrow-btn" id="leftBtn">◀</div>
             <div class="arrow-btn" id="rightBtn">▶</div>
         </div>
-        <div id="fireBtn">💥</div>
     </div>
 </div>
 
 <div id="lvlScreen" class="screen" style="display:none;">
-    <h2 style="color:#0f0;">¡NIVEL SUPERADO!</h2>
-    <div style="width:200px; height:8px; border:1px solid #0f0; margin-top:20px;">
-        <div id="lvlBar" style="width:0%; height:100%; background:#0f0;"></div>
+    <h2 style="color:#0af;">¡INMUNIDAD AUMENTADA!</h2>
+    <p style="color:#fff; margin-top:10px;">El cuerpo se está fortaleciendo...</p>
+    <div style="width:200px; height:8px; border:1px solid #0af; margin-top:20px;">
+        <div id="lvlBar" style="width:0%; height:100%; background:#0af;"></div>
     </div>
 </div>
 
 <div id="endScreen" class="screen" style="display:none;">
-    <h2 id="endTitle" style="color:#f44; font-size:2em;">FIN DEL JUEGO</h2>
+    <h2 id="endTitle" style="color:#f44; font-size:2em;">INFECCIÓN DETECTADA</h2>
+    <p style="color:#fff; text-align:center; margin:10px;">¡Necesitamos descansar y comer bien para recuperarnos!</p>
     <h1 id="finalScore" style="color:#fff;">0</h1>
     <button class="start-btn" onclick="location.reload()">REINTENTAR 🔄</button>
 </div>
 
 <script>
-/* --- LÓGICA PROFESIONAL --- */
-const $ = id => document.getElementById(id);
-let G = {
-    playing: false,
-    lvl: 0,
-    score: 0,
-    lives: 3,
-    px: 50,
-    enemies: [],
-    shots: [],
-    eShots: [],
-    currentSession: 0,
-    gameLoopId: null
-};
+/* --- MOTOR DE AUDIO SINTETIZADO --- */
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playSound(freq, type, duration, vol=0.1) {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+}
 
+const $ = id => document.getElementById(id);
+let G = { playing: false, lvl: 0, score: 0, lives: 3, px: 50, enemies: [], shots: [], eShots: [], currentSession: 0, gameLoopId: null };
 const LEVELS = Array.from({length: 16}, (_, i) => ({
     rows: 3 + Math.floor(i/5),
     cols: 6 + Math.floor(i/3),
-    spd: 60 + (i * 12),
-    shoot: 0.001 + (i * 0.0006)
+    spd: 65 + (i * 12),
+    shoot: 0.0015 + (i * 0.0007)
 }));
 
-// Inicializar Estrellas
-for(let i=0; i<70; i++) {
+// Fondo de Células
+for(let i=0; i<30; i++) {
     const s = document.createElement('div');
-    s.className = 'star';
+    s.className = 'cell';
     s.style.left = Math.random()*100+'%';
     s.style.top = Math.random()*100+'%';
-    s.style.width = s.style.height = (Math.random()*2+1)+'px';
-    s.style.setProperty('--d', (Math.random()*3+2)+'s');
-    s.style.setProperty('--dl', (Math.random()*-5)+'s');
+    const size = Math.random()*50+20;
+    s.style.width = s.style.height = size + 'px';
     $('stars').appendChild(s);
 }
 
 function loadLevel(n) {
-    G.playing = false;
-    G.currentSession++;
+    G.playing = false; G.currentSession++;
     if(G.gameLoopId) cancelAnimationFrame(G.gameLoopId);
-
     const session = G.currentSession;
-    G.lvl = n;
-    G.enemies = [];
-    G.shots = [];
-    G.eShots = [];
-
-    // Limpieza de objetos antiguos
+    G.lvl = n; G.enemies = []; G.shots = []; G.eShots = [];
     document.querySelectorAll('.enemy, .shot, .enemy-shot').forEach(e => e.remove());
-
-    $('startScreen').style.display = 'none';
-    $('lvlScreen').style.display = 'none';
+    $('startScreen').style.display = 'none'; $('lvlScreen').style.display = 'none';
     $('gameArea').style.display = 'block';
-    $('levelInd').textContent = `NIVEL ${n+1}/16`;
-
+    $('levelInd').textContent = `ETAPA ${n+1}`;
     createEnemies(LEVELS[n]);
-
     let lastTime = performance.now();
     function loop(now) {
         if (session !== G.currentSession || !G.playing) return;
-        
-        // FIX DE VELOCIDAD PARA MÓVIL: Limitamos el salto de tiempo (dt)
         let dt = (now - lastTime) / 1000;
         if (dt > 0.1) dt = 0.016; 
         lastTime = now;
-
         update(dt);
         G.gameLoopId = requestAnimationFrame(loop);
     }
-    G.playing = true;
-    G.gameLoopId = requestAnimationFrame(loop);
+    G.playing = true; G.gameLoopId = requestAnimationFrame(loop);
+    playSound(440, 'sine', 0.5);
 }
 
 function createEnemies(cfg) {
-    const gap = 40;
-    const W = window.innerWidth;
+    const gap = 45; const W = window.innerWidth;
     const startX = (W - (cfg.cols * gap)) / 2;
-
+    const virus = ['🦠', '👾', '🧪', '🍄'];
     for(let r=0; r<cfg.rows; r++) {
         for(let c=0; c<cfg.cols; c++) {
             const e = document.createElement('div');
             e.className = 'enemy';
-            e.innerHTML = (r === 0) ? '🛸' : '👾';
-            let x = startX + (c * gap);
-            let y = 70 + (r * gap);
-            e.style.left = x + 'px';
-            e.style.top = y + 'px';
+            e.innerHTML = virus[r % virus.length];
+            let x = startX + (c * gap); let y = 70 + (r * gap);
+            e.style.left = x + 'px'; e.style.top = y + 'px';
             $('gameArea').appendChild(e);
             G.enemies.push({el: e, x, y});
         }
@@ -188,71 +167,52 @@ function createEnemies(cfg) {
 let moveL = false, moveR = false, enemyDir = 1;
 
 function update(dt) {
-    // Jugador
-    if (moveL) G.px -= 80 * dt;
-    if (moveR) G.px += 80 * dt;
+    if (moveL) G.px -= 85 * dt; if (moveR) G.px += 85 * dt;
     G.px = Math.max(5, Math.min(95, G.px));
     $('player').style.left = G.px + '%';
 
-    // Enemigos
-    let hitEdge = false;
-    const speed = LEVELS[G.lvl].spd;
-
+    let hitEdge = false; const speed = LEVELS[G.lvl].spd;
     G.enemies.forEach(e => {
         e.x += speed * enemyDir * dt;
         e.el.style.left = e.x + 'px';
-        if (e.x > window.innerWidth - 35 || e.x < 5) hitEdge = true;
+        if (e.x > window.innerWidth - 40 || e.x < 10) hitEdge = true;
     });
 
     if (hitEdge) {
         enemyDir *= -1;
         G.enemies.forEach(e => {
-            e.y += 15;
-            e.el.style.top = e.y + 'px';
-            if (e.y > window.innerHeight - 160) endGame();
+            e.y += 15; e.el.style.top = e.y + 'px';
+            if (e.y > window.innerHeight - 180) endGame();
         });
     }
 
-    // Disparos Jugador
     for(let i=G.shots.length-1; i>=0; i--) {
-        const s = G.shots[i];
-        s.y -= 450 * dt;
-        s.el.style.top = s.y + 'px';
-
+        const s = G.shots[i]; s.y -= 500 * dt; s.el.style.top = s.y + 'px';
         G.enemies.forEach((e, ei) => {
-            if(s.x > e.x && s.x < e.x + 30 && s.y > e.y && s.y < e.y + 30) {
-                e.el.remove();
-                G.enemies.splice(ei, 1);
-                s.el.remove();
-                G.shots.splice(i, 1);
-                G.score += 100;
-                $('score').textContent = `PTS: ${G.score}`;
+            if(s.x > e.x && s.x < e.x + 35 && s.y > e.y && s.y < e.y + 35) {
+                playSound(150, 'sawtooth', 0.1);
+                e.el.remove(); G.enemies.splice(ei, 1);
+                s.el.remove(); G.shots.splice(i, 1);
+                G.score += 100; $('score').textContent = `ANTÍGENOS: ${G.score}`;
                 if(G.enemies.length === 0) nextLevel();
             }
         });
-
         if(s.y < 0) { s.el.remove(); G.shots.splice(i, 1); }
     }
 
-    // Disparos Enemigos
     if(Math.random() < LEVELS[G.lvl].shoot) {
         const s = G.enemies[Math.floor(Math.random()*G.enemies.length)];
         if(s) fireEnemyShot(s.x + 15, s.y + 20);
     }
 
     for(let i=G.eShots.length-1; i>=0; i--) {
-        const s = G.eShots[i];
-        s.y += 250 * dt;
-        s.el.style.top = s.y + 'px';
-
+        const s = G.eShots[i]; s.y += 280 * dt; s.el.style.top = s.y + 'px';
         let pRect = $('player').getBoundingClientRect();
         if(s.x > pRect.left && s.x < pRect.right && s.y > pRect.top && s.y < pRect.bottom) {
-            s.el.remove();
-            G.eShots.splice(i, 1);
-            G.lives--;
-            document.body.classList.add('shake');
-            setTimeout(()=>document.body.classList.remove('shake'), 200);
-            $('lives').textContent = `VIDAS: ${'❤️'.repeat(G.lives)}`;
+            playSound(100, 'square', 0.3, 0.2);
+            s.el.remove(); G.eShots.splice(i, 1); G.lives--;
+            document.body.classList.add('shake'); setTimeout(()=>document.body.classList.remove('shake'), 200);
+            $('lives').textContent = `SALUD: ${'❤️'.repeat(G.lives)}`;
             if(G.lives <= 0) endGame();
         }
         if(s.y > window.innerHeight) { s.el.remove(); G.eShots.splice(i, 1); }
@@ -261,13 +221,12 @@ function update(dt) {
 
 function fireShot() {
     if(!G.playing) return;
+    playSound(800, 'sine', 0.1);
     const p = $('player').getBoundingClientRect();
     const s = document.createElement('div');
     s.className = 'shot';
-    let x = p.left + (p.width/2);
-    let y = p.top;
-    s.style.left = x + 'px';
-    s.style.top = y + 'px';
+    let x = p.left + (p.width/2); let y = p.top;
+    s.style.left = x + 'px'; s.style.top = y + 'px';
     $('gameArea').appendChild(s);
     G.shots.push({el: s, x, y});
 }
@@ -275,54 +234,44 @@ function fireShot() {
 function fireEnemyShot(x, y) {
     const s = document.createElement('div');
     s.className = 'enemy-shot';
-    s.style.left = x + 'px';
-    s.style.top = y + 'px';
+    s.style.left = x + 'px'; s.style.top = y + 'px';
     $('gameArea').appendChild(s);
     G.eShots.push({el: s, x, y});
 }
 
 function nextLevel() {
-    G.playing = false;
-    if(G.lvl >= 15) return endGame(true);
+    G.playing = false; if(G.lvl >= 15) return endGame(true);
+    playSound(600, 'sine', 0.4);
     $('lvlScreen').style.display = 'flex';
     $('lvlBar').style.width = '0%';
-    setTimeout(() => {
-        $('lvlBar').style.transition = 'width 1.5s linear';
-        $('lvlBar').style.width = '100%';
-    }, 50);
+    setTimeout(() => { $('lvlBar').style.transition = 'width 1.5s linear'; $('lvlBar').style.width = '100%'; }, 50);
     setTimeout(() => loadLevel(G.lvl + 1), 1800);
 }
 
 function endGame(win = false) {
-    G.playing = false;
-    $('gameArea').style.display = 'none';
-    $('endScreen').style.display = 'flex';
-    $('endTitle').textContent = win ? "🏆 ¡HÉROES!" : "💀 BASE CAÍDA";
+    G.playing = false; $('gameArea').style.display = 'none'; $('endScreen').style.display = 'flex';
+    $('endTitle').textContent = win ? "🏆 CUERPO SANO" : "🦠 INFECCIÓN FUERTE";
     $('finalScore').textContent = `SCORE: ${G.score}`;
+    playSound(win ? 800 : 200, 'sawtooth', 1);
 }
 
-/* --- CONTROLES --- */
+// Controles
 window.onkeydown = e => {
-    if(e.key === 'ArrowLeft') moveL = true;
-    if(e.key === 'ArrowRight') moveR = true;
+    if(e.key === 'ArrowLeft') moveL = true; if(e.key === 'ArrowRight') moveR = true;
     if(e.key === ' ') fireShot();
 };
 window.onkeyup = e => {
-    if(e.key === 'ArrowLeft') moveL = false;
-    if(e.key === 'ArrowRight') moveR = false;
+    if(e.key === 'ArrowLeft') moveL = false; if(e.key === 'ArrowRight') moveR = false;
 };
 
-// Touch Móvil Pro
 const bind = (id, start, end) => {
-    $(id).addEventListener('touchstart', e => { e.preventDefault(); start(); });
+    $(id).addEventListener('touchstart', e => { e.preventDefault(); audioCtx.resume(); start(); });
     $(id).addEventListener('touchend', e => { e.preventDefault(); end(); });
 };
-
 bind('leftBtn', () => moveL = true, () => moveL = false);
 bind('rightBtn', () => moveR = true, () => moveR = false);
-$('fireBtn').addEventListener('touchstart', e => { e.preventDefault(); fireShot(); });
-
-$('startBtn').onclick = () => loadLevel(0);
+$('fireBtn').addEventListener('touchstart', e => { e.preventDefault(); audioCtx.resume(); fireShot(); });
+$('startBtn').onclick = () => { audioCtx.resume(); loadLevel(0); };
 </script>
 </body>
 </html>
