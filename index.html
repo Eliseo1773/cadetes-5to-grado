@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
@@ -143,41 +142,57 @@ const TEAMS={
 };
 let selTeam="29";
 
+// ── Pixel map: Alien 1°B ──────────────────────────────────
+const ALIEN_PIX=[
+  [0,0,1,0,0,0,0,0,1,0,0],
+  [0,0,0,1,0,0,0,1,0,0,0],
+  [0,0,1,1,1,1,1,1,1,0,0],
+  [0,1,1,0,1,1,1,0,1,1,0],
+  [1,1,1,1,1,1,1,1,1,1,1],
+  [1,0,1,1,1,1,1,1,1,0,1],
+  [1,0,1,0,0,0,0,0,1,0,1],
+  [0,0,0,1,1,0,1,1,0,0,0],
+];
+
+// ── Pixel map: ADN 2°B (doble hélice) ────────────────────
+const DNA_PIX=[
+  [1,1,0,0,0,0,0,0,0,1,1],
+  [0,1,1,1,0,0,0,1,1,1,0],
+  [0,0,0,1,1,1,1,1,0,0,0],
+  [0,0,0,1,1,1,1,1,0,0,0],
+  [0,0,1,1,0,0,0,1,1,0,0],
+  [0,1,1,0,0,0,0,0,1,1,0],
+  [0,0,0,0,1,1,1,0,0,0,0],
+  [0,0,0,0,1,1,1,0,0,0,0],
+  [0,0,1,1,0,0,0,1,1,0,0],
+  [0,1,1,0,0,0,0,0,1,1,0],
+  [0,0,0,1,1,1,1,1,0,0,0],
+  [0,0,0,1,1,1,1,1,0,0,0],
+  [0,1,1,1,0,0,0,1,1,1,0],
+  [1,1,0,0,0,0,0,0,0,1,1],
+];
+
 // ── Logo alien 1°B en pantalla inicio ────────────────────
 (function drawLogo(){
   const lc=document.getElementById("logo-alien");
   if(!lc)return;
   const lx=lc.getContext("2d");
-  const PIX=[
-    [0,0,1,0,0,0,0,0,1,0,0],
-    [0,0,0,1,0,0,0,1,0,0,0],
-    [0,0,1,1,1,1,1,1,1,0,0],
-    [0,1,1,0,1,1,1,0,1,1,0],
-    [1,1,1,1,1,1,1,1,1,1,1],
-    [1,0,1,1,1,1,1,1,1,0,1],
-    [1,0,1,0,0,0,0,0,1,0,1],
-    [0,0,0,1,1,0,1,1,0,0,0],
-  ];
   const SC=8,OFX=0,OFY=4;
   lx.clearRect(0,0,88,72);
-  // glow
   lx.shadowBlur=14;lx.shadowColor="#cc44ff";
-  PIX.forEach((row,ry)=>row.forEach((p,rx)=>{
+  ALIEN_PIX.forEach((row,ry)=>row.forEach((p,rx)=>{
     if(p){lx.fillStyle="#cc44ff";
       lx.fillRect(OFX+rx*SC,OFY+ry*SC,SC-1,SC-1);}
   }));
-  // ojos blancos
   lx.shadowBlur=0;
   lx.fillStyle="#ffffff";
   lx.fillRect(OFX+2*SC,OFY+3*SC,SC,SC);
   lx.fillRect(OFX+7*SC,OFY+3*SC,SC,SC);
-  // pupila
   lx.fillStyle="#330044";
   lx.fillRect(OFX+2*SC+2,OFY+3*SC+2,SC-4,SC-4);
   lx.fillRect(OFX+7*SC+2,OFY+3*SC+2,SC-4,SC-4);
-  // etiqueta
   lx.fillStyle="#ffaaff";lx.font="bold 11px monospace";lx.textAlign="center";
-  lx.fillText("1° B",44,OFY+PIX.length*SC+14);
+  lx.fillText("1° B",44,OFY+ALIEN_PIX.length*SC+14);
 })();
 
 // ── Navegación pantallas ──────────────────────────────────
@@ -244,11 +259,12 @@ function mkAudio(){
       zap,hit:()=>beep(200,.15,"sawtooth",.17),
       stage:()=>[261,329,392,523].forEach((f,i)=>setTimeout(()=>beep(f,.2,"sine",.24),i*100)),
       alien:()=>[300,250,200,180].forEach((f,i)=>setTimeout(()=>beep(f,.15,"sawtooth",.2),i*80)),
+      dna:()=>[400,600,500,700,600,800].forEach((f,i)=>setTimeout(()=>beep(f,.1,"triangle",.18),i*55)),
       resume:()=>{if(ac.state==="suspended")ac.resume();},
       startBg(){if(bgOn)return;bgOn=true;if(ac.state==="suspended")ac.resume().then(playBg);else playBg();},
       stopBg(){bgOn=false;clearTimeout(bgT);}
     };
-  }catch(e){const n=()=>{};return{shoot:n,explode:n,capture:n,rescue:n,powerup:n,zap:n,hit:n,stage:n,alien:n,resume:n,startBg:n,stopBg:n};}
+  }catch(e){const n=()=>{};return{shoot:n,explode:n,capture:n,rescue:n,powerup:n,zap:n,hit:n,stage:n,alien:n,dna:n,resume:n,startBg:n,stopBg:n};}
 }
 const aud=mkAudio();
 
@@ -283,10 +299,10 @@ function initState(lv=1){
     stars:Array.from({length:STAR_N},()=>({x:Math.random()*W,y:Math.random()*H,
       s:Math.random()*1.5+.5,sp:Math.random()*.8+.3})),
     score:0,
-    lives:3,        // ← siempre empieza con 3
+    lives:3,
     scool:0,ecool:0,fdir:1,fx:0,
     dtimer:80,frame:0,flash:0,
-    invinc:0,       // ← invencibilidad tras recibir daño
+    invinc:0,
     lv,
     capState:null,capEnemy:null,capBeam:0,capCD:0,capSX:0,capSY:0,
     chall:false,challLbl:0,challEn:[],
@@ -297,7 +313,7 @@ function initState(lv=1){
     alienB:null,alienBTimer:600+Math.random()*400,
     // 🧬 ADN 2°B — mutación: todos los enemigos se ralentizan
     dPow:false,dTimer:0,dFX:0,dPickup:null,dSpawn:700+Math.random()*400,dFlash:0,
-    hitLock:false,   // ← lock para evitar doble conteo de colisión
+    hitLock:false,
   };
 }
 
@@ -310,17 +326,7 @@ function ePos(e){
   return{x:OX+e.col*GX+S.fx,y:OY+e.row*GY};
 }
 
-// ── Alien 1°B pixel map ───────────────────────────────────
-const ALIEN_PIX=[
-  [0,0,1,0,0,0,0,0,1,0,0],
-  [0,0,0,1,0,0,0,1,0,0,0],
-  [0,0,1,1,1,1,1,1,1,0,0],
-  [0,1,1,0,1,1,1,0,1,1,0],
-  [1,1,1,1,1,1,1,1,1,1,1],
-  [1,0,1,1,1,1,1,1,1,0,1],
-  [1,0,1,0,0,0,0,0,1,0,1],
-  [0,0,0,1,1,0,1,1,0,0,0],
-];
+// ── Draw: Alien 1°B pixel art ─────────────────────────────
 function drawAlienB(ctx,x,y,sc,frame){
   const col=frame%40<20?"#cc44ff":"#aa22ee";
   const PX=sc,PY=sc;
@@ -335,6 +341,28 @@ function drawAlienB(ctx,x,y,sc,frame){
   ctx.restore();
 }
 
+// ── Draw: ADN 2°B pixel art (doble hélice) ────────────────
+function drawDNA(ctx,x,y,sc,frame){
+  const pulse=Math.sin(frame*0.06)*0.5+0.5;
+  ctx.save();
+  ctx.shadowBlur=14+pulse*8;
+  ctx.shadowColor="#00ffcc";
+  DNA_PIX.forEach((row,ry)=>{
+    row.forEach((p,rx)=>{
+      if(!p)return;
+      const isRung=rx>=3&&rx<=7;
+      if(isRung){
+        const hue=Math.round(150+(ry/DNA_PIX.length)*60);
+        ctx.fillStyle=`hsl(${hue},100%,${60+pulse*15}%)`;
+      }else{
+        ctx.fillStyle=`hsl(168,100%,${55+pulse*15}%)`;
+      }
+      ctx.fillRect(x+rx*sc,y+ry*sc,sc-1,sc-1);
+    });
+  });
+  ctx.restore();
+}
+
 // ── LOOP ──────────────────────────────────────────────────
 function loop(ts){
   if(!last)last=ts;
@@ -343,7 +371,6 @@ function loop(ts){
   const s=S;s.frame++;
   const tc=TEAMS[s.team];
 
-  // ── Reducir invencibilidad ────────────────────────────
   if(s.invinc>0){s.invinc=Math.max(0,s.invinc-dt);}
 
   // ── entrada ──────────────────────────────────────────
@@ -406,7 +433,6 @@ function loop(ts){
     ab.x+=ab.vx*dt;ab.y+=ab.vy*dt;
     ab.flash=Math.max(0,ab.flash-dt);
     if(s.frame%90===0)ab.vy*=-1;
-    // colisión con jugador — respeta invencibilidad
     if(s.invinc<=0&&!s.zPow){
       const dx=Math.abs(ab.x-(s.px+PW/2)),dy=Math.abs(ab.y-(s.py+PH/2));
       if(dx<22&&dy<20){
@@ -415,6 +441,38 @@ function loop(ts){
       }
     }
     if(ab.x<-60||ab.x>W+60||ab.y>H+60)s.alienB=null;
+  }
+
+  // ── pickup 1°B (escudo morado) ────────────────────────
+  s.bSpawn=Math.max(0,s.bSpawn-dt);
+  if(s.bSpawn<=0&&!s.bPickup&&!s.bPow){
+    s.bPickup={x:Math.random()*(W-50)+25,y:-28,vy:1.0};s.bSpawn=600+Math.random()*400;}
+  if(s.bPickup){
+    s.bPickup.y+=s.bPickup.vy*dt;
+    if(s.bPickup.y>H+20)s.bPickup=null;
+    else if(s.bPickup.x<s.px+PW&&s.bPickup.x+28>s.px&&s.bPickup.y<s.py+PH&&s.bPickup.y+28>s.py){
+      s.bPickup=null;s.bPow=true;s.bTimer=350;s.bFX=40;aud.alien();s.score+=400;}
+  }
+  if(s.bPow){
+    s.bTimer=Math.max(0,s.bTimer-dt);if(s.bTimer<=0)s.bPow=false;
+    if(s.bFX>0)s.bFX=Math.max(0,s.bFX-dt);
+    s.bFlash=(s.bFlash||0)+.14*dt;
+  }
+
+  // ── pickup 🧬 ADN 2°B ─────────────────────────────────
+  s.dSpawn=Math.max(0,s.dSpawn-dt);
+  if(s.dSpawn<=0&&!s.dPickup&&!s.dPow){
+    s.dPickup={x:Math.random()*(W-60)+30,y:-30,vy:0.9};s.dSpawn=700+Math.random()*500;}
+  if(s.dPickup){
+    s.dPickup.y+=s.dPickup.vy*dt;
+    if(s.dPickup.y>H+20)s.dPickup=null;
+    else if(s.dPickup.x<s.px+PW&&s.dPickup.x+33>s.px&&s.dPickup.y<s.py+PH&&s.dPickup.y+42>s.py){
+      s.dPickup=null;s.dPow=true;s.dTimer=400;s.dFX=45;aud.dna();s.score+=500;}
+  }
+  if(s.dPow){
+    s.dTimer=Math.max(0,s.dTimer-dt);if(s.dTimer<=0)s.dPow=false;
+    if(s.dFX>0)s.dFX=Math.max(0,s.dFX-dt);
+    s.dFlash=(s.dFlash||0)+.12*dt;
   }
 
   // ── capture beam ──────────────────────────────────────
@@ -455,7 +513,7 @@ function loop(ts){
   s.bullets.forEach(b=>b.y-=7*dt);
 
   // ── formación ─────────────────────────────────────────
-  const slowMult = s.dPow ? 0.3 : 1; // 🧬 ADN ralentiza todo
+  const slowMult=s.dPow?0.3:1;
   if(!s.chall&&s.entryDone){
     const af=s.enemies.filter(e=>e.alive&&!e.diving);
     if(af.length){
@@ -530,17 +588,16 @@ function loop(ts){
   s.bullets=s.bullets.filter(Boolean);
 
   // ── balas enemigas impactan jugador ───────────────────
-  // SOLO se descuenta vida si invinc === 0
   s.eb.forEach((b,bi)=>{
     if(!b||s.invinc>0)return;
     if(b.x<s.px+PW-4&&b.x+5>s.px+4&&b.y<s.py+PH&&b.y+8>s.py){
       if(s.zPow){s.eb[bi]=null;s.zFX=12;return;}
-      if(s.bPow){s.eb[bi]=null;s.bFX=12;return;} // escudo 1°B bloquea
+      if(s.bPow){s.eb[bi]=null;s.bFX=12;return;}
       s.lives--;
       s.eb[bi]=null;
       s.flash=20;
       s.dual=false;
-      s.invinc=150;   // ~2.5 seg de inmunidad
+      s.invinc=150;
       aud.hit();
       if(s.lives<=0){endGame();return;}
     }
@@ -552,7 +609,7 @@ function loop(ts){
     if(!e.alive||!e.diving||s.invinc>0)return;
     if(e.oy+EH>s.py&&e.oy<s.py+PH&&e.ox+EW>s.px+4&&e.ox<s.px+PW-4){
       if(s.zPow){e.alive=false;s.score+=200;s.zFX=18;return;}
-      if(s.bPow){e.alive=false;s.score+=150;s.bFX=18;return;} // escudo 1°B repele
+      if(s.bPow){e.alive=false;s.score+=150;s.bFX=18;return;}
       s.lives--;
       e.alive=false;
       s.flash=20;
@@ -573,12 +630,21 @@ function loop(ts){
 
   s.flash=Math.max(0,s.flash-dt);
 
-  // ─────────────── DRAW ─────────────────────────────────
+  // ═══════════════════════════════════════════
+  // ─────────────── DRAW ──────────────────────
+  // ═══════════════════════════════════════════
   cx.fillStyle="#000010";cx.fillRect(0,0,W,H);
 
   if(s.zPow){
     const g=cx.createRadialGradient(W/2,H/2,10,W/2,H/2,W);
     g.addColorStop(0,`rgba(255,220,0,${.07+.04*Math.sin(s.zFlash)})`);
+    g.addColorStop(1,"rgba(0,0,0,0)");cx.fillStyle=g;cx.fillRect(0,0,W,H);
+  }
+
+  // ADN fondo suave
+  if(s.dPow){
+    const g=cx.createRadialGradient(W/2,H/2,10,W/2,H/2,W);
+    g.addColorStop(0,`rgba(0,255,204,${.04+.02*Math.sin(s.dFlash)})`);
     g.addColorStop(1,"rgba(0,0,0,0)");cx.fillStyle=g;cx.fillRect(0,0,W,H);
   }
 
@@ -592,7 +658,7 @@ function loop(ts){
     cx.restore();cx.textAlign="left";
   }
 
-  // rayo pickup
+  // ── rayo 1°A pickup ──────────────────────────────────
   if(s.zPickup){
     const a=Math.sin(s.frame*.15)*.4+.6;
     cx.save();cx.shadowBlur=18;cx.shadowColor="#ffdd00";
@@ -602,14 +668,32 @@ function loop(ts){
     cx.restore();cx.textAlign="left";
   }
 
-  // ── pickup 1°B (alien morado cae desde arriba)
+  // ── pickup 1°B: alien morado pixel art cae desde arriba
   if(s.bPickup){
     const bp=s.bPickup;
     const a=Math.sin(s.frame*.13)*.4+.6;
-    cx.save();cx.shadowBlur=18;cx.shadowColor="#cc44ff";cx.globalAlpha=a;
+    cx.save();cx.globalAlpha=a;
+    cx.shadowBlur=16;cx.shadowColor="#cc44ff";
+    // Dibuja el alien pixel art centrado en bp.x+14, bp.y+14
     drawAlienB(cx,bp.x+14,bp.y+14,3,s.frame);
-    cx.globalAlpha=1;cx.font="8px monospace";cx.fillStyle="#ffaaff";cx.textAlign="center";
-    cx.fillText("1°B",bp.x+14,bp.y+32);
+    cx.globalAlpha=1;
+    cx.font="bold 8px monospace";cx.fillStyle="#ffaaff";cx.textAlign="center";
+    cx.fillText("1°B",bp.x+14,bp.y+38);
+    cx.restore();cx.textAlign="left";
+  }
+
+  // ── pickup 2°B: ADN pixel art cae desde arriba ────────
+  if(s.dPickup){
+    const dp=s.dPickup;
+    const a=Math.sin(s.frame*.12)*.4+.6;
+    const SC_DNA=3;
+    const dnaW=DNA_PIX[0].length*SC_DNA;
+    const dnaH=DNA_PIX.length*SC_DNA;
+    cx.save();cx.globalAlpha=a;
+    drawDNA(cx,dp.x,dp.y,SC_DNA,s.frame);
+    cx.globalAlpha=1;
+    cx.font="bold 8px monospace";cx.fillStyle="#aaffee";cx.textAlign="center";
+    cx.fillText("2°B",dp.x+dnaW/2,dp.y+dnaH+10);
     cx.restore();cx.textAlign="left";
   }
 
@@ -619,22 +703,10 @@ function loop(ts){
     cx.fillStyle="#cc44ff";cx.fillRect(0,0,W,H);cx.restore();
   }
 
-  // ── pickup 🧬 ADN 2°B ────────────────────────────────
-  if(s.dPickup){
-    const dp=s.dPickup,a=Math.sin(s.frame*.12)*.4+.6;
-    cx.save();cx.globalAlpha=a;cx.shadowBlur=20;cx.shadowColor="#00ffcc";
-    cx.font="bold 26px monospace";cx.textAlign="center";
-    cx.fillStyle="#00ffcc";cx.fillText("🧬",dp.x+14,dp.y+22);
-    cx.globalAlpha=1;cx.font="bold 9px monospace";cx.fillStyle="#aaffee";
-    cx.fillText("2°B",dp.x+14,dp.y+34);
-    cx.restore();cx.textAlign="left";
-  }
-
-  // ADN FX — destello cyan
+  // ADN FX — destello cyan + espiral
   if(s.dFX>0){
     cx.save();cx.globalAlpha=Math.min(.3,s.dFX/28);
     cx.fillStyle="#00ffcc";cx.fillRect(0,0,W,H);cx.restore();
-    // espiral ADN simple sobre la nave
     cx.save();cx.strokeStyle=`hsla(170,100%,70%,${Math.min(.9,s.dFX/15)})`;
     cx.lineWidth=2;cx.shadowBlur=12;cx.shadowColor="#00ffcc";
     for(let side of[-1,1]){cx.beginPath();
@@ -657,7 +729,7 @@ function loop(ts){
     cx.fillText("¡TRACTOR BEAM!",bx,by+bh+14);cx.textAlign="left";
   }
 
-  // alien 1°B
+  // alien 1°B volador
   if(s.alienB&&s.alienB.alive){
     const ab=s.alienB;
     cx.save();cx.shadowBlur=ab.flash>0?20:12;cx.shadowColor=ab.flash>0?"#fff":"#cc44ff";
@@ -674,7 +746,7 @@ function loop(ts){
     cx.save();cx.translate(e.x,e.y);drawEnemy(cx,1,"#ff88ff",s.frame);cx.restore();
   });
 
-  // formation
+  // formation enemies
   s.enemies.forEach(e=>{
     if(!e.alive)return;const p=ePos(e);
     cx.save();cx.translate(p.x+EW/2,p.y+EH/2);
@@ -710,7 +782,7 @@ function loop(ts){
     cx.save();cx.globalAlpha=s.capState==="rescued"?.5:1;drawShip(cx,s.capSX,s.capSY,tc);cx.restore();
   }
 
-  // FX rayo
+  // FX rayo 1°A
   if(s.zFX>0){
     cx.save();cx.globalAlpha=Math.min(.4,s.zFX/25);cx.fillStyle="#ffdd00";cx.fillRect(0,0,W,H);cx.restore();
     cx.save();cx.strokeStyle="#fff";cx.lineWidth=2;cx.globalAlpha=.6;
@@ -730,12 +802,20 @@ function loop(ts){
     cx.restore();
   }
 
+  // escudo 1°B aura alrededor de la nave
+  if(s.bPow){
+    cx.save();
+    cx.strokeStyle=`hsla(280,100%,70%,${.5+.3*Math.sin(s.bFlash)})`;
+    cx.lineWidth=3;cx.shadowBlur=16;cx.shadowColor="#cc44ff";
+    cx.beginPath();cx.arc(s.px+PW/2,s.py+PH/2,22+3*Math.sin(s.bFlash),0,Math.PI*2);
+    cx.stroke();cx.restore();
+  }
+
   // HUD
   cx.fillStyle="#aaffee";cx.font="bold 13px monospace";cx.fillText(`SCORE  ${s.score}`,10,22);
   cx.fillStyle="#ff8855";cx.textAlign="right";cx.fillText(`HI  ${Math.max(s.score,hiScore)}`,W-6,22);
   cx.fillStyle="#ffcc44";cx.textAlign="center";cx.fillText(`LVL ${s.lv}`,W/2,22);cx.textAlign="left";
 
-  // ❤️ vidas como corazones
   for(let i=0;i<s.lives;i++){
     cx.fillStyle="#ff4466";cx.font="14px monospace";cx.fillText("❤",10+i*20,H-22);}
   cx.fillStyle=tc.col;cx.font="bold 11px monospace";cx.textAlign="right";
@@ -743,6 +823,7 @@ function loop(ts){
 
   if(s.dual){cx.fillStyle="#88ffff";cx.font="10px monospace";cx.textAlign="center";cx.fillText("★ DUAL SHIP",W/2,H-8);cx.textAlign="left";}
 
+  // barra 1°A
   if(s.zPow){
     const bw=110,bh=7,bx=W/2-bw/2,by=H-38;
     cx.fillStyle="#222";cx.fillRect(bx,by,bw,bh);
@@ -753,14 +834,8 @@ function loop(ts){
     cx.fillStyle="#ffaaff";cx.font="9px monospace";cx.textAlign="center";
     cx.fillText("⚡ 1°A POWER",W/2,by-3);cx.textAlign="left";
   }
+  // barra 1°B
   if(s.bPow){
-    // aura escudo morado alrededor de la nave
-    cx.save();
-    cx.strokeStyle=`hsla(280,100%,70%,${.5+.3*Math.sin(s.bFlash)})`;
-    cx.lineWidth=3;cx.shadowBlur=16;cx.shadowColor="#cc44ff";
-    cx.beginPath();cx.arc(s.px+PW/2,s.py+PH/2,22+3*Math.sin(s.bFlash),0,Math.PI*2);
-    cx.stroke();cx.restore();
-    // barra 1°B
     const bw=110,bh=7,bx=W/2-bw/2,by=s.zPow?H-50:H-38;
     cx.fillStyle="#220033";cx.fillRect(bx,by,bw,bh);
     const g2=cx.createLinearGradient(bx,by,bx+bw,by);
@@ -770,6 +845,22 @@ function loop(ts){
     cx.fillStyle="#ffaaff";cx.font="9px monospace";cx.textAlign="center";
     cx.fillText("👾 1°B SHIELD",W/2,by-3);cx.textAlign="left";
   }
+  // barra 2°B
+  if(s.dPow){
+    const bw=110,bh=7,bx=W/2-bw/2;
+    let by=H-38;
+    if(s.zPow)by-=12;
+    if(s.bPow)by-=12;
+    cx.fillStyle="#002222";cx.fillRect(bx,by,bw,bh);
+    const g3=cx.createLinearGradient(bx,by,bx+bw,by);
+    g3.addColorStop(0,"#00ffcc");g3.addColorStop(1,"#007755");
+    cx.fillStyle=g3;cx.fillRect(bx,by,bw*(s.dTimer/400),bh);
+    cx.strokeStyle="#00ffcc";cx.lineWidth=1;cx.strokeRect(bx,by,bw,bh);
+    cx.fillStyle="#aaffee";cx.font="9px monospace";cx.textAlign="center";
+    cx.fillText("🧬 2°B MUTACIÓN",W/2,by-3);cx.textAlign="left";
+  }
+
+  cx.fillStyle="#445566";cx.font="8px monospace";cx.textAlign="right";
   cx.fillText("Eliseo Espinoza",W-6,H-6);cx.textAlign="left";
 
   raf=requestAnimationFrame(loop);
@@ -809,7 +900,7 @@ function drawEnemy(ctx,row,col,frame){
 function startGame(){
   aud.resume();aud.stage();aud.startBg();
   S=initState(1);last=0;
-  show("none"); // oculta todas las pantallas UI
+  show("none");
   document.getElementById("scr-intro").style.display="none";
   document.getElementById("btns").style.display="flex";
   cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);
@@ -820,7 +911,6 @@ function endGame(){
   const tc=TEAMS[S.team];
   document.getElementById("btns").style.display="none";
   show("scr-intro");
-  // reemplaza intro con game over
   document.getElementById("scr-intro").innerHTML=`
     <h1>💀 GAME OVER</h1>
     <div style="color:${tc.col};font-size:clamp(13px,4vw,16px);margin-bottom:5px;">⚔️ ${tc.name}</div>
