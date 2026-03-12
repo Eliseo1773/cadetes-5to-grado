@@ -6,32 +6,41 @@
 <title>GALAGA — Eliseo Espinoza</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
   body{background:#000010;display:flex;flex-direction:column;align-items:center;
-       justify-content:center;min-height:100vh;font-family:monospace;overflow:hidden;
-       touch-action:none;}
-  canvas{display:block;border:2px solid #223;max-width:100vw;max-height:80vh;}
-  #ui{color:#44ffaa;text-align:center;padding:16px;}
-  #ui h1{font-size:clamp(24px,8vw,42px);color:#ffcc00;letter-spacing:4px;
-          text-shadow:0 0 20px #ffaa00;margin-bottom:6px;}
-  #ui .sub{color:#88ffee;font-size:clamp(11px,3vw,15px);margin-bottom:4px;}
-  #ui .dev{color:#ff8855;font-size:clamp(10px,2.5vw,13px);margin:6px 0 10px;}
-  #ui .ctrl{color:#556;font-size:clamp(9px,2.2vw,12px);line-height:1.9;margin-bottom:14px;}
+       justify-content:flex-start;min-height:100vh;font-family:monospace;
+       overflow-y:auto;overflow-x:hidden;touch-action:manipulation;}
+  #wrap{display:flex;flex-direction:column;align-items:center;
+        justify-content:center;min-height:100vh;width:100%;padding:8px 0;}
+  canvas{display:block;border:2px solid #223;max-width:100vw;}
+  /* ── UI pantalla inicio/gameover ── */
+  #ui{color:#44ffaa;text-align:center;padding:12px 16px;}
+  #ui h1{font-size:clamp(28px,8vw,46px);color:#ffcc00;letter-spacing:4px;
+          text-shadow:0 0 20px #ffaa00;margin-bottom:4px;}
+  #ui .sub{color:#88ffee;font-size:clamp(12px,3vw,16px);margin-bottom:4px;}
+  #ui .dev{color:#ff8855;font-size:clamp(11px,2.5vw,14px);margin:6px 0 10px;}
+  #ui .ctrl{color:#778;font-size:clamp(10px,2.2vw,13px);line-height:2;margin-bottom:16px;}
   #ui .ctrl span{color:#aaffee;}
   #ui .ctrl .tip{color:#ffcc44;}
   #ui .ctrl .tip2{color:#88ffff;}
-  #btn{padding:12px 36px;font-size:clamp(13px,4vw,17px);background:#ffcc00;border:none;
+  #btn{padding:14px 40px;font-size:clamp(14px,4vw,18px);background:#ffcc00;border:none;
        border-radius:8px;cursor:pointer;font-weight:bold;letter-spacing:2px;
-       box-shadow:0 0 20px #ffaa00;font-family:monospace;}
-  #score-over{color:#ff8855;font-size:clamp(16px,5vw,22px);margin-bottom:4px;}
-  #hi-over{color:#ffcc44;font-size:clamp(12px,3.5vw,16px);margin-bottom:12px;}
-  #btns{display:none;flex-direction:row;gap:10px;justify-content:center;
-        flex-wrap:wrap;margin-top:8px;}
-  .cbtn{padding:13px 16px;font-size:clamp(16px,5vw,19px);background:#112;color:#aaffee;
-        border:1px solid #336;border-radius:10px;cursor:pointer;min-width:68px;
-        font-family:monospace;-webkit-user-select:none;user-select:none;}
+       box-shadow:0 0 24px #ffaa00;font-family:monospace;margin-top:4px;}
+  #btn:active{transform:scale(0.96);}
+  /* ── Botones táctiles ── */
+  #btns{display:none;flex-direction:row;align-items:center;
+        justify-content:space-between;width:100%;max-width:480px;
+        padding:8px 12px;gap:8px;margin-top:6px;}
+  .cbtn{padding:14px 0;font-size:clamp(18px,5vw,22px);background:#0a0a1a;color:#aaffee;
+        border:1px solid #336;border-radius:12px;cursor:pointer;
+        font-family:monospace;-webkit-user-select:none;user-select:none;
+        flex:1;text-align:center;touch-action:none;}
+  .cbtn:active{background:#1a1a3a;}
+  #bf{background:#1a0a00;color:#ff8822;border-color:#662;font-size:clamp(20px,6vw,26px);}
 </style>
 </head>
 <body>
+<div id="wrap">
 <canvas id="c"></canvas>
 
 <div id="ui">
@@ -48,8 +57,9 @@
 
 <div id="btns">
   <button class="cbtn" id="bl">◀</button>
-  <button class="cbtn" id="bf">🔥</button>
   <button class="cbtn" id="br">▶</button>
+  <button class="cbtn" id="bf">🔥</button>
+</div>
 </div>
 
 <script>
@@ -70,6 +80,44 @@ function makeAudio(){
       g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);
       o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+dur);
     }
+
+    // ── Música de fondo ──
+    let bgNodes=[], bgRunning=false;
+    const melody=[
+      [392,0.12],[440,0.12],[494,0.12],[523,0.18],[0,0.06],
+      [494,0.12],[440,0.12],[392,0.18],[0,0.06],
+      [330,0.12],[370,0.12],[392,0.18],[0,0.06],
+      [330,0.12],[294,0.12],[262,0.24],[0,0.12],
+      [523,0.12],[494,0.12],[440,0.12],[392,0.18],[0,0.06],
+      [440,0.12],[494,0.12],[523,0.18],[0,0.06],
+      [587,0.12],[523,0.12],[494,0.12],[440,0.24],[0,0.12],
+    ];
+    let bgTimeout=null;
+    function playBg(){
+      if(!bgRunning)return;
+      let t=ctx.currentTime;
+      melody.forEach(([freq,dur])=>{
+        if(freq>0){
+          const o=ctx.createOscillator(),g=ctx.createGain();
+          o.type="square";o.frequency.value=freq;
+          g.gain.setValueAtTime(0.06,t);
+          g.gain.exponentialRampToValueAtTime(0.001,t+dur*0.9);
+          o.connect(g);g.connect(ctx.destination);
+          o.start(t);o.stop(t+dur);
+        }
+        t+=dur;
+      });
+      const total=melody.reduce((s,[,d])=>s+d,0);
+      bgTimeout=setTimeout(playBg,total*1000+50);
+    }
+    function startBg(){
+      if(bgRunning)return;
+      bgRunning=true;
+      if(ctx.state==="suspended")ctx.resume().then(playBg);
+      else playBg();
+    }
+    function stopBg(){bgRunning=false;clearTimeout(bgTimeout);}
+
     return{
       shoot:()=>beep(880,0.08,"square",0.12),
       explode:()=>{beep(120,0.3,"sawtooth",0.2);beep(80,0.4,"sawtooth",0.15,20);},
@@ -78,9 +126,10 @@ function makeAudio(){
       powerup:()=>[400,600,800,1000,1200].forEach((f,i)=>setTimeout(()=>beep(f,0.12,"triangle",0.2),i*60)),
       stage:()=>[261,329,392,523].forEach((f,i)=>setTimeout(()=>beep(f,0.2,"sine",0.25),i*100)),
       hit:()=>beep(200,0.15,"sawtooth",0.18),
-      resume:()=>{if(ctx.state==="suspended")ctx.resume();}
+      resume:()=>{if(ctx.state==="suspended")ctx.resume();},
+      startBg, stopBg
     };
-  }catch(e){const n=()=>{};return{shoot:n,explode:n,capture:n,rescue:n,powerup:n,stage:n,hit:n,resume:n};}
+  }catch(e){const n=()=>{};return{shoot:n,explode:n,capture:n,rescue:n,powerup:n,stage:n,hit:n,resume:n,startBg:n,stopBg:n};}
 }
 
 // ── Init ─────────────────────────────────────────────────
@@ -461,7 +510,7 @@ function drawEnemy(ctx,row,col,frame){
 
 // ── Game control ─────────────────────────────────────────
 function startGame(){
-  audio.resume();audio.stage();
+  audio.resume();audio.stage();audio.startBg();
   S=initState(1);last=0;phase="play";
   ui.style.display="none";
   btns.style.display="flex";
@@ -470,19 +519,18 @@ function startGame(){
 }
 function endGame(){
   phase="over";cancelAnimationFrame(raf);
+  audio.stopBg();
   hiScore=Math.max(hiScore,S.score);
   btns.style.display="none";
   ui.style.display="block";
   ui.innerHTML=`
     <h1>💀 GAME OVER</h1>
     <div class="dev">Desarrollado por <b>Eliseo Espinoza</b></div>
-    <div id="score-over">SCORE: ${S.score}</div>
-    <div id="hi-over">HI-SCORE: ${hiScore}</div>
-    <button id="btn">▶ PLAY AGAIN</button>`;
+    <div style="color:#ff8855;font-size:clamp(16px,5vw,22px);margin-bottom:4px">SCORE: ${S.score}</div>
+    <div style="color:#ffcc44;font-size:clamp(12px,3.5vw,16px);margin-bottom:16px">HI-SCORE: ${hiScore}</div>
+    <button id="btn" style="padding:14px 40px;font-size:clamp(14px,4vw,18px);background:#ffcc00;border:none;border-radius:8px;cursor:pointer;font-weight:bold;letter-spacing:2px;box-shadow:0 0 24px #ffaa00;font-family:monospace;">▶ PLAY AGAIN</button>`;
   document.getElementById("btn").onclick=startGame;
 }
-
-btn.onclick=startGame;
 
 // ── Keyboard ─────────────────────────────────────────────
 window.addEventListener("keydown",e=>{keys[e.key]=true;
@@ -500,10 +548,26 @@ hold("bl","ArrowLeft");hold("bf"," ");hold("br","ArrowRight");
 
 // ── Resize canvas ─────────────────────────────────────────
 function resize(){
-  const scale=Math.min(window.innerWidth/W,(window.innerHeight*0.82)/H);
-  canvas.style.width=W*scale+"px";canvas.style.height=H*scale+"px";
+  const pad=120; // espacio para botones y UI
+  const maxH=window.innerHeight-pad;
+  const scale=Math.min(window.innerWidth/W, maxH/H, 1);
+  canvas.style.width=W*scale+"px";
+  canvas.style.height=H*scale+"px";
 }
 window.addEventListener("resize",resize);resize();
+
+// init UI
+ui.innerHTML=`
+  <h1>🚀 GALAGA</h1>
+  <div class="sub">Arcade Clásico</div>
+  <div class="dev">Desarrollado por <b>Eliseo Espinoza</b></div>
+  <div class="ctrl">
+    <span>← → / A D</span> → Mover &nbsp;|&nbsp; <span>ESPACIO / ↑</span> → Disparar<br/>
+    <span class="tip">★ Recoge la estrella para nave doble</span><br/>
+    <span class="tip2">⚠ ¡Esquiva el tractor beam del boss!</span>
+  </div>
+  <button id="btn">▶ INSERT COIN</button>`;
+document.getElementById("btn").onclick=startGame;
 </script>
 </body>
 </html>
