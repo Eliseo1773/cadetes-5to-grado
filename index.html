@@ -6,9 +6,625 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="game-container">
+    <div id="game-container"><!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>🛡️ DEFENSA CELULAR</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;touch-action:none;user-select:none;-webkit-user-select:none;}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:sans-serif;position:fixed;}
+#bg{position:fixed;inset:0;z-index:0;background:radial-gradient(circle, #200 0%, #000 100%);}
+.cell-bg{position:absolute;background:rgba(255,50,50,0.07);border-radius:50%;pointer-events:none;animation:pulse 3s infinite alternate;}
+@keyframes pulse{from{opacity:0.3;}to{opacity:0.8;}}
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:200;padding:20px;background:rgba(0,0,0,0.95);}
+h1{font-size:2em;color:#ff4d4d;text-align:center;margin-bottom:10px;text-shadow:0 0 10px #f00;}
+.start-btn{background:#ff4d4d;color:#fff;border:none;padding:18px 45px;font-size:1.3em;font-weight:bold;cursor:pointer;border-radius:50px;box-shadow:0 0 20px #f00;margin-top:15px;}
+.start-btn:hover{background:#ff2222;}
+#gameArea{position:fixed;inset:0;display:none;z-index:10;}
+#hud{position:fixed;top:0;left:0;right:0;height:50px;display:flex;justify-content:space-between;align-items:center;color:#ff4d4d;font-size:0.85em;z-index:50;background:rgba(0,0,0,0.85);padding:0 12px;border-bottom:2px solid #f00;font-weight:bold;}
+#player{position:fixed;font-size:2.6em;z-index:20;transform:translateX(-50%);bottom:140px;transition:filter 0.1s;}
+.shot{position:fixed;width:5px;height:20px;background:#0af;border-radius:3px;box-shadow:0 0 8px #0af,0 0 14px #0af;z-index:15;}
+.shot.plasma{background:#f0f;box-shadow:0 0 10px #f0f,0 0 20px #f0f;width:7px;height:25px;}
+.enemy-shot{position:fixed;width:5px;height:13px;background:#0f0;border-radius:2px;box-shadow:0 0 6px #0f0;z-index:15;}
+.enemy{position:fixed;font-size:1.8em;z-index:5;width:38px;height:38px;display:flex;align-items:center;justify-content:center;}
+.enemy.tank{font-size:1.5em;filter:drop-shadow(0 0 6px red);}
+.shield-block{position:fixed;z-index:12;font-size:1.6em;width:34px;height:34px;display:flex;align-items:center;justify-content:center;}
+.powerup{position:fixed;font-size:1.8em;z-index:18;animation:bob 0.8s infinite alternate;}
+@keyframes bob{from{transform:translateY(0);}to{transform:translateY(-6px);}}
+.ufo{position:fixed;font-size:2em;z-index:16;top:60px;}
+.storm{position:fixed;width:3px;border-radius:2px;z-index:17;background:#ff0;box-shadow:0 0 8px #ff0;}
+#shield-bar{position:fixed;top:50px;left:0;height:4px;background:#0af;z-index:51;transition:width 0.2s;}
+#mobileControls{position:fixed;bottom:18px;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:0 20px;z-index:300;}
+#fireBtn{width:90px;height:90px;background:rgba(0,150,255,0.25);border:3px solid #0af;border-radius:50%;color:#0af;font-size:2.2em;display:flex;justify-content:center;align-items:center;}
+.arrows{display:flex;gap:12px;}
+.arrow-btn{width:78px;height:78px;background:rgba(255,255,255,0.1);border:3px solid #fff;border-radius:15px;color:#fff;font-size:2.2em;display:flex;justify-content:center;align-items:center;}
+#levelMsg{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#ff4d4d;font-size:2.5em;font-weight:bold;text-shadow:0 0 20px #f00;z-index:400;pointer-events:none;display:none;text-align:center;}
+@media(min-width:769px){#mobileControls{display:none;}#player{bottom:50px;}}
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<div id="startScreen" class="screen">
+  <h1>🛡️ SISTEMA INMUNE</h1>
+  <p style="color:#aaa;text-align:center;margin-bottom:5px;font-size:0.95em;">16 Niveles · Power-Ups · Jefes · OVNI</p>
+  <p style="color:#666;text-align:center;font-size:0.8em;margin-bottom:20px;">← → Mover &nbsp;|&nbsp; ESPACIO Disparar</p>
+  <button class="start-btn" id="startBtn">⚔️ COMENZAR</button>
+</div>
+<div id="gameArea">
+  <div id="hud">
+    <div id="lives">❤️❤️❤️</div>
+    <div id="score">PT: 0</div>
+    <div id="levelInd">NIV 1</div>
+    <div id="pwrInd" style="color:#0af;">—</div>
+  </div>
+  <div id="shield-bar" style="width:0%;"></div>
+  <div id="player">🛡️</div>
+  <div id="levelMsg"></div>
+  <div id="mobileControls">
+    <div id="fireBtn">⚡</div>
+    <div class="arrows">
+      <div class="arrow-btn" id="leftBtn">◀</div>
+      <div class="arrow-btn" id="rightBtn">▶</div>
+    </div>
+  </div>
+</div>
+<div id="endScreen" class="screen" style="display:none;">
+  <h2 id="endTitle" style="color:#f44;font-size:2em;margin-bottom:10px;">FIN DEL JUEGO</h2>
+  <h1 id="finalScore" style="color:#fff;margin-bottom:20px;"></h1>
+  <p id="endLevel" style="color:#aaa;margin-bottom:25px;"></p>
+  <button class="start-btn" onclick="location.reload()">🔄 REINTENTAR</button>
+</div>
+
+<script>
+// ── AUDIO ────────────────────────────────────────────────────────────────────
+const AC = new (window.AudioContext||window.webkitAudioContext)();
+function sfx(freq, type, dur, vol=0.12, sweep=0){
+  try{
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.type=type; o.frequency.setValueAtTime(freq, AC.currentTime);
+    if(sweep) o.frequency.linearRampToValueAtTime(sweep, AC.currentTime+dur);
+    g.gain.setValueAtTime(vol, AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime+dur);
+    o.connect(g); g.connect(AC.destination);
+    o.start(); o.stop(AC.currentTime+dur);
+  }catch(e){}
+}
+function sfxShoot(){ sfx(700,'sine',0.08,0.08,400); }
+function sfxHit()  { sfx(180,'sawtooth',0.12,0.15); }
+function sfxDie()  { sfx(120,'square',0.3,0.2,60); }
+function sfxPwr()  { sfx(440,'sine',0.4,0.18,880); }
+function sfxUfo()  { sfx(300,'square',0.6,0.1,150); }
+function sfxShld() { sfx(600,'triangle',0.2,0.12,900); }
+function sfxBomb() {
+  [200,160,120,80].forEach((f,i)=>setTimeout(()=>sfx(f,'sawtooth',0.25,0.2),i*60));
+}
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+const $=id=>document.getElementById(id);
+const W=()=>window.innerWidth, H=()=>window.innerHeight;
+function mkEl(cls,html,parent){
+  const e=document.createElement('div');
+  e.className=cls; e.innerHTML=html||'';
+  (parent||$('gameArea')).appendChild(e);
+  return e;
+}
+function bbox(el){ return el.getBoundingClientRect(); }
+function collide(ax,ay,aw,ah,bx,by,bw,bh){
+  return ax<bx+bw && ax+aw>bx && ay<by+bh && ay+ah>by;
+}
+function showMsg(txt, dur=1600){
+  const m=$('levelMsg'); m.innerHTML=txt; m.style.display='block';
+  setTimeout(()=>m.style.display='none', dur);
+}
+
+// ── GAME STATE ────────────────────────────────────────────────────────────────
+const MAX_LIVES=3, MAX_LEVELS=16;
+let G={};
+
+function resetGame(){
+  G={
+    playing:false, lvl:1, score:0, lives:MAX_LIVES,
+    px:50, // percent
+    enemies:[], shots:[], eShots:[], shields:[], powerups:[], storms:[],
+    ufo:null, ufoDir:1,
+    session:0, loopId:null,
+    // power-up state
+    shieldHP:0,       // invincibility frames (ms)
+    plasmaActive:false,
+    plasmaTimer:0,
+    autoFire:false,   // no auto for desktop; auto on mobile fire-hold
+    // timers
+    ufoTimer:0,
+    stormTimer:0,
+    shootTimer:0,
+    // input
+    mL:false, mR:false, firing:false,
+    fireRate:0, // cooldown
+    dir:1,
+  };
+}
+resetGame();
+
+// ── LEVEL DEFINITIONS ─────────────────────────────────────────────────────────
+// rows, cols, hasTank, hasStorm, powerupFreq(0-1)
+const LEVELS=[
+  {rows:2,cols:5,tank:0,storm:false,pFreq:0.3},  // 1
+  {rows:2,cols:6,tank:0,storm:false,pFreq:0.3},  // 2
+  {rows:3,cols:6,tank:0,storm:false,pFreq:0.35}, // 3
+  {rows:3,cols:7,tank:1,storm:false,pFreq:0.35}, // 4
+  {rows:3,cols:7,tank:1,storm:true, pFreq:0.4},  // 5
+  {rows:4,cols:7,tank:1,storm:true, pFreq:0.4},  // 6
+  {rows:4,cols:8,tank:2,storm:true, pFreq:0.4},  // 7
+  {rows:4,cols:8,tank:2,storm:true, pFreq:0.45}, // 8
+  {rows:5,cols:8,tank:2,storm:true, pFreq:0.45}, // 9
+  {rows:5,cols:9,tank:3,storm:true, pFreq:0.5},  // 10
+  {rows:5,cols:9,tank:3,storm:true, pFreq:0.5},  // 11
+  {rows:6,cols:9,tank:3,storm:true, pFreq:0.5},  // 12
+  {rows:6,cols:10,tank:4,storm:true,pFreq:0.55}, // 13
+  {rows:6,cols:10,tank:4,storm:true,pFreq:0.55}, // 14
+  {rows:7,cols:10,tank:5,storm:true,pFreq:0.6},  // 15
+  {rows:7,cols:11,tank:6,storm:true,pFreq:0.6},  // 16
+];
+function lvlCfg(){ return LEVELS[Math.min(G.lvl-1, LEVELS.length-1)]; }
+
+// ── INIT LEVEL ────────────────────────────────────────────────────────────────
+function initLevel(){
+  G.playing=false;
+  G.session++;
+  if(G.loopId) cancelAnimationFrame(G.loopId);
+
+  // clear DOM
+  document.querySelectorAll('.enemy,.shot,.enemy-shot,.shield-block,.powerup,.ufo,.storm')
+    .forEach(e=>e.remove());
+
+  G.enemies=[]; G.shots=[]; G.eShots=[]; G.shields=[];
+  G.powerups=[]; G.storms=[]; G.ufo=null;
+  G.dir=1; G.fireRate=0;
+  G.ufoTimer=8+Math.random()*12;
+  G.stormTimer=6+Math.random()*8;
+  G.shootTimer=0;
+
+  $('startScreen').style.display='none';
+  $('endScreen').style.display='none';
+  $('gameArea').style.display='block';
+  $('levelInd').textContent=`NIV ${G.lvl}`;
+  updateHUD();
+
+  const cfg=lvlCfg();
+
+  // spawn enemies
+  const cellW=42, cellH=42;
+  const gridW=cfg.cols*cellW;
+  const startX=Math.max(10,(W()-gridW)/2);
+
+  let tankCount=0;
+  for(let r=0;r<cfg.rows;r++){
+    for(let c=0;c<cfg.cols;c++){
+      const isTank=(tankCount < cfg.tank && r===cfg.rows-1 && c<cfg.tank);
+      if(isTank) tankCount++;
+      const emojis=isTank?'🦠':'(r%3===0?\'🧫\':r%3===1?\'🦠\':\'👾\')';
+      const ico=isTank?'🦠':(r%3===0?'🧫':r%3===1?'🦠':'👾');
+      const el=mkEl('enemy'+(isTank?' tank':''), ico);
+      const x=startX+c*cellW, y=58+r*cellH;
+      el.style.left=x+'px'; el.style.top=y+'px';
+      G.enemies.push({el,x,y,hp:isTank?3:1,tank:isTank});
+    }
+  }
+
+  // spawn shield blocks (4 bunkers)
+  const bunkerY=H()-190;
+  [0.18,0.38,0.62,0.82].forEach(fx=>{
+    for(let b=0;b<3;b++){
+      const bx=W()*fx - 25 + b*28;
+      const el=mkEl('shield-block','🟦');
+      el.style.left=bx+'px'; el.style.top=bunkerY+'px';
+      G.shields.push({el,x:bx,y:bunkerY,hp:3});
+    }
+  });
+
+  const s=G.session;
+  let last=performance.now();
+  function loop(t){
+    if(G.session!==s||!G.playing) return;
+    let dt=Math.min((t-last)/1000, 0.05);
+    last=t;
+    update(dt);
+    G.loopId=requestAnimationFrame(loop);
+  }
+  G.playing=true;
+  G.loopId=requestAnimationFrame(loop);
+}
+
+// ── HUD ───────────────────────────────────────────────────────────────────────
+function updateHUD(){
+  $('lives').textContent='❤️'.repeat(Math.max(0,G.lives));
+  $('score').textContent='PT: '+G.score;
+  const sb=$('shield-bar');
+  if(G.shieldHP>0){
+    sb.style.width=Math.min(100,(G.shieldHP/3000)*100)+'%';
+    sb.style.background='#0af';
+    $('pwrInd').textContent='🛡️ ESCUDO';
+  } else if(G.plasmaActive){
+    sb.style.width='100%'; sb.style.background='#f0f';
+    $('pwrInd').textContent='⚡ PLASMA';
+  } else {
+    sb.style.width='0%';
+    $('pwrInd').textContent='—';
+  }
+}
+
+// ── SPAWN POWER-UP ────────────────────────────────────────────────────────────
+function spawnPowerup(x,y){
+  const cfg=lvlCfg();
+  if(Math.random()>cfg.pFreq) return;
+  const types=['⚡','💊','💣'];
+  const t=types[Math.floor(Math.random()*types.length)];
+  const el=mkEl('powerup',t);
+  el.style.left=x+'px'; el.style.top=y+'px';
+  G.powerups.push({el,x,y,type:t});
+}
+
+// ── SPAWN UFO ─────────────────────────────────────────────────────────────────
+function spawnUFO(){
+  if(G.ufo) return;
+  sfxUfo();
+  const el=mkEl('ufo','🛸');
+  el.style.top='62px';
+  G.ufoDir=(Math.random()<0.5)?1:-1;
+  let ux=G.ufoDir>0?-50:W()+10;
+  el.style.left=ux+'px';
+  G.ufo={el,x:ux};
+}
+
+// ── SPAWN STORM ───────────────────────────────────────────────────────────────
+function spawnStorm(){
+  const n=2+G.lvl;
+  for(let i=0;i<n;i++){
+    setTimeout(()=>{
+      const el=mkEl('storm','');
+      const x=Math.random()*W();
+      el.style.left=x+'px'; el.style.top='55px';
+      el.style.height='0px';
+      G.storms.push({el,x,y:55,len:0,maxLen:H()-120,speed:600+Math.random()*300});
+    },i*180);
+  }
+}
+
+// ── UPDATE ────────────────────────────────────────────────────────────────────
+function update(dt){
+  const cfg=lvlCfg();
+
+  // ── player movement ──
+  const spd=320; // px/s absolute
+  const pxAbs=(G.px/100)*W();
+  let newPx=pxAbs;
+  if(G.mL) newPx-=spd*dt;
+  if(G.mR) newPx+=spd*dt;
+  G.px=Math.max(4,Math.min(96,(newPx/W())*100));
+  $('player').style.left=G.px+'%';
+
+  // ── shield timer ──
+  if(G.shieldHP>0){
+    G.shieldHP-=dt*1000;
+    $('player').style.filter=`drop-shadow(0 0 10px #0af)`;
+    if(G.shieldHP<=0){$('player').style.filter=''; G.shieldHP=0;}
+  }
+
+  // ── plasma timer ──
+  if(G.plasmaActive){
+    G.plasmaTimer-=dt*1000;
+    if(G.plasmaTimer<=0){ G.plasmaActive=false; }
+  }
+
+  // ── auto fire (mobile hold) ──
+  G.fireRate=Math.max(0,G.fireRate-dt*1000);
+  if(G.firing && G.fireRate<=0) shoot();
+
+  // ── timers ──
+  G.ufoTimer-=dt;
+  if(G.ufoTimer<=0){
+    spawnUFO();
+    G.ufoTimer=15+Math.random()*20;
+  }
+  if(cfg.storm){
+    G.stormTimer-=dt;
+    if(G.stormTimer<=0){
+      spawnStorm();
+      G.stormTimer=8+Math.random()*10;
+    }
+  }
+
+  // ── enemy movement ──
+  const espd=55+G.lvl*7;
+  let edge=false;
+  G.enemies.forEach(e=>{
+    e.x+=espd*G.dir*dt;
+    e.el.style.left=e.x+'px';
+    if(e.x>W()-42 || e.x<5) edge=true;
+  });
+  if(edge){
+    G.dir*=-1;
+    G.enemies.forEach(e=>{
+      e.y+=22;
+      e.el.style.top=e.y+'px';
+      if(e.y>H()-190){ endGame(); return; }
+    });
+  }
+
+  // ── enemy shoot ──
+  G.shootTimer-=dt;
+  if(G.shootTimer<=0 && G.enemies.length>0){
+    const rate=Math.max(0.4, 2.5-G.lvl*0.12);
+    G.shootTimer=rate*(0.6+Math.random()*0.8);
+    // prefer bottom-row enemy
+    const front=[];
+    G.enemies.forEach(e=>{
+      const same=G.enemies.filter(o=>Math.abs(o.x-e.x)<20);
+      if(same.every(o=>o.y<=e.y)) front.push(e);
+    });
+    const shooter=(front.length?front:G.enemies)[Math.floor(Math.random()*(front.length||G.enemies.length))];
+    if(shooter){
+      const el=mkEl('enemy-shot','');
+      el.style.left=(shooter.x+16)+'px'; el.style.top=(shooter.y+30)+'px';
+      G.eShots.push({el,x:shooter.x+16,y:shooter.y+30});
+    }
+  }
+
+  // ── player shots ──
+  for(let i=G.shots.length-1;i>=0;i--){
+    const s=G.shots[i];
+    s.y-=520*dt;
+    s.el.style.top=s.y+'px';
+    if(s.y<-20){ s.el.remove(); G.shots.splice(i,1); continue; }
+
+    // hit shield block
+    let hitShield=false;
+    for(let si=G.shields.length-1;si>=0;si--){
+      const b=G.shields[si];
+      if(collide(s.x,s.y,6,20,b.x,b.y,32,32)){
+        b.hp--;
+        if(b.hp<=0){ b.el.remove(); G.shields.splice(si,1); }
+        s.el.remove(); G.shots.splice(i,1);
+        hitShield=true; break;
+      }
+    }
+    if(hitShield) continue;
+
+    // hit enemy
+    let hitEnemy=false;
+    for(let ei=G.enemies.length-1;ei>=0;ei--){
+      const e=G.enemies[ei];
+      if(collide(s.x,s.y,6,20,e.x,e.y,36,36)){
+        e.hp--;
+        sfxHit();
+        if(e.hp<=0){
+          spawnPowerup(e.x,e.y);
+          e.el.remove(); G.enemies.splice(ei,1);
+          G.score+=e.tank?150:50;
+        } else {
+          e.el.style.filter='brightness(3)';
+          setTimeout(()=>{if(e.el)e.el.style.filter='';},80);
+        }
+        s.el.remove(); G.shots.splice(i,1);
+        $('score').textContent='PT: '+G.score;
+        if(G.enemies.length===0) nextLevel();
+        hitEnemy=true; break;
+      }
+    }
+    if(hitEnemy) continue;
+
+    // hit UFO
+    if(G.ufo){
+      const u=G.ufo;
+      if(collide(s.x,s.y,6,20,u.x,62,40,30)){
+        sfxUfo(); sfxHit();
+        u.el.remove(); G.ufo=null;
+        G.score+=500;
+        $('score').textContent='PT: '+G.score;
+        showMsg('🛸 +500',900);
+        s.el.remove(); G.shots.splice(i,1);
+      }
+    }
+  }
+
+  // ── enemy shots ──
+  for(let i=G.eShots.length-1;i>=0;i--){
+    const s=G.eShots[i];
+    s.y+=260*dt;
+    s.el.style.top=s.y+'px';
+    if(s.y>H()){s.el.remove();G.eShots.splice(i,1);continue;}
+
+    // hit shield block
+    let hitB=false;
+    for(let si=G.shields.length-1;si>=0;si--){
+      const b=G.shields[si];
+      if(collide(s.x,s.y,5,13,b.x,b.y,32,32)){
+        b.hp--;
+        if(b.hp<=0){b.el.remove();G.shields.splice(si,1);}
+        s.el.remove(); G.eShots.splice(i,1);
+        hitB=true; break;
+      }
+    }
+    if(hitB) continue;
+
+    // hit player
+    const px=G.px/100*W()-20, py=H()-170;
+    if(collide(s.x,s.y,5,13,px,py,40,40)){
+      s.el.remove(); G.eShots.splice(i,1);
+      hitPlayer();
+    }
+  }
+
+  // ── UFO movement ──
+  if(G.ufo){
+    G.ufo.x+=200*G.ufoDir*dt;
+    G.ufo.el.style.left=G.ufo.x+'px';
+    if(G.ufo.x>W()+60||G.ufo.x<-60){
+      G.ufo.el.remove(); G.ufo=null;
+    }
+  }
+
+  // ── lightning storm ──
+  for(let i=G.storms.length-1;i>=0;i--){
+    const st=G.storms[i];
+    st.len=Math.min(st.maxLen, st.len+st.speed*dt);
+    st.el.style.height=st.len+'px';
+    // check hit player
+    const px=G.px/100*W();
+    if(Math.abs(st.x-px)<18 && st.len>H()-175){
+      if(G.shieldHP<=0){ hitPlayer(); }
+      st.el.remove(); G.storms.splice(i,1);
+    } else if(st.len>=st.maxLen){
+      setTimeout(()=>{try{st.el.remove();}catch(e){}},200);
+      G.storms.splice(i,1);
+    }
+  }
+
+  // ── power-ups ──
+  for(let i=G.powerups.length-1;i>=0;i--){
+    const p=G.powerups[i];
+    p.y+=80*dt;
+    p.el.style.top=p.y+'px';
+    if(p.y>H()+20){p.el.remove();G.powerups.splice(i,1);continue;}
+    const px=G.px/100*W()-18, py=H()-170;
+    if(collide(p.x,p.y,30,30,px,py,46,46)){
+      applyPowerup(p.type);
+      p.el.remove(); G.powerups.splice(i,1);
+    }
+  }
+
+  updateHUD();
+}
+
+// ── POWERUPS ──────────────────────────────────────────────────────────────────
+function applyPowerup(t){
+  sfxPwr();
+  if(t==='⚡'){ G.plasmaActive=true; G.plasmaTimer=7000; showMsg('⚡ PLASMA!',1200); }
+  else if(t==='💊'){
+    if(G.lives<MAX_LIVES){ G.lives++; sfxShld(); showMsg('💊 +VIDA',1000); }
+    else { G.shieldHP=3000; showMsg('🛡️ ESCUDO',1000); }
+  }
+  else if(t==='💣'){
+    sfxBomb();
+    showMsg('💣 BOMBA!',1200);
+    G.enemies.forEach(e=>{
+      e.el.style.transform='scale(2)';
+      e.el.style.opacity='0';
+      setTimeout(()=>{ try{e.el.remove();}catch(ex){} },300);
+    });
+    G.score+=G.enemies.length*30;
+    G.enemies=[];
+    $('score').textContent='PT: '+G.score;
+    setTimeout(()=>{ if(G.playing && G.enemies.length===0) nextLevel(); },500);
+  }
+}
+
+// ── SHOOT ─────────────────────────────────────────────────────────────────────
+function shoot(){
+  if(!G.playing) return;
+  const maxS=G.plasmaActive?5:3;
+  if(G.shots.length>=maxS) return;
+  sfxShoot();
+  G.fireRate=G.plasmaActive?180:280;
+  const px=G.px/100*W()-2;
+  const py=H()-172;
+  const el=mkEl('shot'+(G.plasmaActive?' plasma':''),'');
+  el.style.left=px+'px'; el.style.top=py+'px';
+  G.shots.push({el,x:px,y:py});
+}
+
+// ── HIT PLAYER ───────────────────────────────────────────────────────────────
+function hitPlayer(){
+  if(G.shieldHP>0){ sfxShld(); return; }
+  sfxDie();
+  G.lives--;
+  $('player').style.filter='drop-shadow(0 0 15px red)';
+  setTimeout(()=>$('player').style.filter='',400);
+  updateHUD();
+  if(G.lives<=0) endGame();
+}
+
+// ── NEXT LEVEL ────────────────────────────────────────────────────────────────
+function nextLevel(){
+  G.playing=false;
+  if(G.lvl>=MAX_LEVELS){
+    G.score+=2000;
+    $('endScreen').style.display='flex';
+    $('endTitle').textContent='🏆 ¡VICTORIA!';
+    $('endTitle').style.color='#ff0';
+    $('finalScore').textContent='PUNTOS: '+G.score;
+    $('endLevel').textContent='¡Completaste los 16 niveles!';
+    return;
+  }
+  G.lvl++;
+  showMsg(`NIVEL ${G.lvl} 🦠`,1400);
+  setTimeout(initLevel, 1600);
+}
+
+// ── END GAME ─────────────────────────────────────────────────────────────────
+function endGame(){
+  if(!G.playing && !$('endScreen').style.display==='none') return;
+  G.playing=false;
+  sfxDie(); sfxDie();
+  $('gameArea').style.display='none';
+  $('endScreen').style.display='flex';
+  $('endTitle').textContent='💀 FIN DEL JUEGO';
+  $('endTitle').style.color='#f44';
+  $('finalScore').textContent='PUNTOS: '+G.score;
+  $('endLevel').textContent='Llegaste al nivel '+G.lvl;
+}
+
+// ── CONTROLS ─────────────────────────────────────────────────────────────────
+function resume(){ try{ AC.resume(); }catch(e){} }
+
+// mobile buttons
+function bindMove(id, setL, setR){
+  const el=$(id);
+  el.addEventListener('touchstart',e=>{e.preventDefault();resume();setL(true);setR(false);},{passive:false});
+  el.addEventListener('touchend',  e=>{e.preventDefault();setL(false);},{passive:false});
+  el.addEventListener('touchcancel',e=>{setL(false);},{passive:false});
+}
+bindMove('leftBtn', v=>G.mL=v, v=>{});
+bindMove('rightBtn',v=>G.mR=v, v=>{});
+
+const fb=$('fireBtn');
+fb.addEventListener('touchstart',e=>{e.preventDefault();resume();G.firing=true;shoot();},{passive:false});
+fb.addEventListener('touchend',  e=>{e.preventDefault();G.firing=false;},{passive:false});
+fb.addEventListener('touchcancel',e=>{G.firing=false;},{passive:false});
+
+// keyboard
+window.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft')  G.mL=true;
+  if(e.key==='ArrowRight') G.mR=true;
+  if(e.key===' '){ e.preventDefault(); resume(); G.firing=true; shoot(); }
+});
+window.addEventListener('keyup',e=>{
+  if(e.key==='ArrowLeft')  G.mL=false;
+  if(e.key==='ArrowRight') G.mR=false;
+  if(e.key===' ')          G.firing=false;
+});
+
+// start
+$('startBtn').addEventListener('click',()=>{ resume(); initLevel(); });
+
+// bg deco
+for(let i=0;i<18;i++){
+  const c=document.createElement('div');
+  c.className='cell-bg';
+  c.style.left=Math.random()*100+'%';
+  c.style.top=Math.random()*100+'%';
+  const s=Math.random()*70+20;
+  c.style.width=c.style.height=s+'px';
+  $('bg').appendChild(c);
+}
+</script>
+</body>
+</html>
         <canvas id="gameCanvas"></canvas>
     </div>
     <script src="script.js"></script>
 </body>
 </html>
+
